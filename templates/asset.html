@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:01 GMT -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>H+ 后台主题UI框架 - 数据表格</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link rel="shortcut icon" href="../static/favicon.ico">
+    <link href="/static/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <!-- Data Tables -->
+{#    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">#}
+    <link href="/static/css/plugins/footable/footable.core.css" rel="stylesheet">
+    <link href="/static/css/animate.min.css" rel="stylesheet">
+    <link href="/static/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/css/gstyle.css" rel="stylesheet">
+    <link href="/static/css/plugins/iCheck/custom.css" rel="stylesheet">
+    <link href="/static/css/plugins/chosen/chosen.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+    <!--通知消息处-->
+    {% if result  %}
+        {% if result.code == 0 %}
+            <div class="alert alert-success alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行成功:<strong>{{ result.message }}</strong>
+            </div>
+        {% else %}
+            <div class="alert alert-danger alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行失败:<strong>{{ result.message }}</strong>
+            </div>
+        {% endif %}
+    {% endif %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <h5><a href="/index_v3/">首页</a><B style="color:#ccc">/</B> Asset列表 </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a onclick="window.location.reload()">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </ol>
+                    </div>
+
+                    <div class="ibox-content">
+                        <div class="col-sm-12 m-b-xs" style="padding-bottom: 10px;">
+                            <form method="get">
+                                <div class="col-sm-1"> <!--添加-->
+                                    <a class="btn btn-info" href="#" data-toggle="modal" data-target="#AddModal">+ 添加</a>
+                                </div>
+
+                                <div class="col-sm-1">
+                                    <a id="shownv"  type="button" class="btn btn-warning">显示更多</a>
+                                </div>
+                                <div class="col-sm-5"></div>
+                                <div class="col-sm-3 ">
+                                    <input type="text" name="q" value="{{ search_q }}" class="form-control"  placeholder="请输入关键字进行搜索或导出" />
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="submit" value="搜索" class="btn btn-primary" />
+                                        <i class="fa fa-search"></i>&nbsp;&nbsp;搜索主机
+                                    </button>
+                                </div>
+
+                                <div class="col-sm-1">
+                                    <button id="export" type="submit" class="btn btn-success" name="export" value="xlsx"><i class="fa fa-download"></i>&nbsp;&nbsp;导出表格</button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <form method="post" action="/cmdb/asset_run_tasks">
+                            {% csrf_token %}
+                            <input class="hide" type="text" name="page" value="{{ page }}">
+                            <div class="col-sm-12 m-b-xs" style="padding-bottom: 10px;">
+                                <div class="col-sm-7"></div>
+                                <div class="col-sm-2">
+                                    <select class="form-control"  id="chose-action">
+                                        <option disabled selected='selected'>====选择批量执行动作====</option>
+                                        <option value="1">修改主机组</option>
+                                        <option value="2">修改标签</option>
+                                        <option value="3">修改主机状态</option>
+{#                                        <option value="4">执行主机任务</option>#}
+{#                                        <option value="5">下发任务脚本</option>#}
+                                    </select>
+                                </div>
+
+                                <div id="add-action" class="col-sm-2">
+                                    <select class="form-control">
+                                        <option disabled selected="selected">====请选择批量执行动作====</option>
+                                    </select>
+                                </div>
+                                <!--
+                                <div class="col-sm-2">
+                                    <select data-placeholder="选择主机组" name="business_units"  class="chosen-select" multiple style="width:200px;" tabindex="4">
+                                        {% for bussiness in business_list %}
+                                            <option value="{{ bussiness.id }}" hassubinfo="true">{{ bussiness.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <select data-placeholder="选择标签" name="tags"  class="chosen-select" multiple style="width:200px;" tabindex="4">
+                                        {% for tag in tag_list %}
+                                            <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+
+                                <div class="col-sm-2">
+                                    <select class="form-control"  name="status_ids">
+                                        <option value="1">上架</option>
+                                        <option value="2">在线</option>
+                                        <option value="3">离线</option>
+                                        <option value="4">下架</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <select class="form-control" name="task_script" id="">
+                                        {% for script in taskscript_list %}
+                                            <option value="{{ script.id }}">{{ script.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                -->
+
+
+                                <div class="col-sm-1">
+                                    <button type="submit" value="修改" class="btn btn-primary js_confirm" />
+                                        <i class="fa fa-random"></i>&nbsp;&nbsp;批量执行
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-12 m-b-xs">
+                                <div id="show-nav" class="panel panel-default" style="display: none;">
+                                    <div class="panel-heading"><i class="fa fa-filter" aria-hidden="true"></i> 快速筛选</div>
+                                    <div class="panel-body">
+                                        <div class="comb-search">
+                                            按主机组:
+                                           {% if row %}
+                                                {% for r in row %}
+                                                    {{ r | safe }}
+                                                {% endfor %}
+                                           {% endif %}
+                                            按主机状态:
+                                           {% if ss_row %}
+                                                {% for r in ss_row %}
+                                                    {{ r | safe }}
+                                                {% endfor %}
+                                           {% endif %}
+                                            按标签:
+                                           {% if tag_row %}
+                                                {% for r in tag_row %}
+                                                    {{ r | safe }}
+                                                {% endfor %}
+                                           {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                             <table class="footable table table-stripped toggle-arrow-tiny" data-page-size="10" data-filter=#filter>
+                                 <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>主机名</th>
+                                        <th>SN</th>
+                                        <th>管理IP</th>
+                                        <th>操作系统</th>
+                                        <th>CPU个数</th>
+                                        <th>IDC</th>
+                                        <th>主机组</th>
+                                        <th>TAGS</th>
+                                        <th>状态</th>
+
+                                        <th data-hide="all">制造商</th>
+                                        <th data-hide="all">型号</th>
+                                        <th data-hide="all">系统版本</th>
+                                        <th data-hide="all">CPU物理个数</th>
+                                        <th data-hide="all">CPU型号</th>
+                                        <th data-hide="all">创建日期</th>
+                                        <th data-hide="all">修改日期</th>
+                                        <th data-hide="all">机柜号</th>
+                                        <th data-hide="all">客户端版本</th>
+                                        <th>操作(更新/删除/任务)</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    {% for asset in queryset %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox"  class="i-checks" name="input_chk" value="{{ asset.id }}">
+                                            </td>
+                                            <td class="tooltip-demo">
+                                                <a data-toggle="tooltip" data-placement="right" title="主机详情" class="btn-white btn-sm" href="/cmdb/asset_detail?id={{ asset.id }}">
+                                                    {{ asset.hostname }}
+                                                </a>
+                                            </td>
+                                            <td>{{ asset.sn }}</td>
+                                            <td>{{ asset.manage_ip }}</td>
+                                            <td>{{ asset.os_platform }}</td>
+                                            <td>{{ asset.cpu_count }}</td>
+                                            <td>{{ asset.idc.name }}</td>
+                                            <td>
+                                                {% for b in asset.business_unit.values  %}
+                                                    <a class="btn btn-success btn-outline btn-xs">{{ b.name }}</a>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% for t in asset.tags.values %}
+                                                    <a class="btn-sm btn-primary">{{ t.name }}</a>
+                                                {% endfor %}
+                                            </td>
+                                            <td>
+                                                {% if asset.server_status_id == 1 %}
+                                                    <a class="btn-sm btn-success">{{ asset.get_server_status_id_display }}</a>
+                                                {% elif asset.server_status_id == 2 %}
+                                                    <a class="btn-sm btn-info">{{ asset.get_server_status_id_display }}</a>
+                                                {% elif asset.server_status_id == 3 %}
+                                                    <a class="btn-sm btn-danger">{{ asset.get_server_status_id_display }}</a>
+                                                {% elif asset.server_status_id == 4 %}
+                                                    <a class="btn-sm btn-warning">{{ asset.get_server_status_id_display }}</a>
+                                                {% endif %}
+                                            </td>
+
+
+                                            <td>{{ asset.manufacturer }}</td>
+                                            <td>{{ asset.model }}</td>
+                                            <td>{{ asset.os_version }}</td>
+                                            <td>{{ asset.cpu_physical_count }}</td>
+                                            <td>{{ asset.cpu_model }}</td>
+                                            <td>{{ asset.create_at }}</td>
+                                            <td>{{ asset.latest_date }}</td>
+                                            <td>{{ asset.cabinet_num }}</td>
+                                            <td>{{ asset.client_version }}</td>
+                                            <td class="tooltip-demo" style="font-size: 20px">
+                                                <a class="mod-asset-btn" title="更新主机" sid="{{ asset.id }}" data-toggle="modal" data-target="#UpdateModal">
+                                                    <i class="fa fa-cog"></i>
+                                                </a>
+                                                <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/asset_del?server_id={{ asset.id }}&page={{ page }}" title="删除主机" class="del_confirm" style="margin-left: 15px">
+                                                    <i class="fa fa-trash"></i>
+                                                </a>
+                                                <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_task_status/{{ asset.id }}////" title="任务列表" style="margin-left: 15px">
+                                                    <i class="fa fa-cubes"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                 </tbody>
+                                 <tfoot>
+                                    <tr class="hide">
+                                        <td colspan="10">
+                                            <ul class="pagination pull-right"></ul>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                             </table>
+                             <div class="row">
+                                <div class="col-md-6 col-md-offset-3" style="text-align: center">
+                                    <ul class="pagination">
+                                        {{ page_html|safe }}
+                                    </ul>
+                                </div>
+                            </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="AddModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">添加主机</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/cmdb/asset_add"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input class="hide" type="text" name="page" value="{{ page }}">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">主机名：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="hostname" id="get_hostname"
+                                       placeholder="主机名,必选">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">SN：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="sn" id="get_sn"
+                                       placeholder="SN号，必选">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">主机状态：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="server_status_id" id="get_server_status_id">
+                                    <option value="1">上架</option>
+                                    <option value="2">在线</option>
+                                    <option value="3">下架</option>
+                                    <option value="4">离线</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="UpdateModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_mod_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">更新主机资产</h4>
+                </div>
+                <div class="panel-body">
+                    <form action="/cmdb/asset_update" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input class="hide" type="text" name="page" value="{{ page }}">
+                        <div class="tabs-container">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">基本设置</a>
+                                </li>
+                                <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">其它设置</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="tab-1" class="tab-pane active">
+                                    <div class="panel-body">
+
+                                        <div class="hide form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">主机ID<font style="color:red;"> *</font></h5></div>
+                                            <div class="col-sm-9">
+                                                <input class="form-control"  name="id" id="mod_id">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">主机名<font style="color:red;"> *</font></h5></div>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"  name="hostname" id="mod_hostname"
+                                                       placeholder="主机名，比如 www.c1.com,必选">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">SN<font style="color:red;"> *</font></h5></div>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"  name="sn" id="mod_sn"
+                                                       placeholder="SN号,必选">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">制造商<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"  name="manufacturer" id="mod_manufacturer"
+                                                       placeholder="制造商">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">型号<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"  name="model" id="mod_model"
+                                                       placeholder="型号">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">管理IP<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"  name="manage_ip" id="mod_manage_ip"
+                                                       placeholder="管理IP地址">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">操作系统<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"  name="os_platform" id="mod_os_platform"
+                                                       placeholder="操作系统">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">系统版本<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-9">
+                                                <input class="form-control" type="text"  name="os_version" id="mod_os_version"
+                                                       placeholder="系统版本">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div id="tab-2" class="tab-pane">
+                                    <div class="panel-body">
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">主机状态<font style="color:red;"> *</font></h5></div>
+                                            <div class="col-sm-10">
+                                                <select class="form-control"  name="server_status_id" id="mod_server_status_id">
+                                                    <option value="1">上架</option>
+                                                    <option value="2">在线</option>
+                                                    <option value="3">离线</option>
+                                                    <option value="4">下架</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">标签<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-10">
+                                                <select class="form-control"  name="tags" id="mod_tags" multiple>
+                                                    {% for tag in tag_list %}
+                                                        <option value="{{ tag.id }}">{{ tag.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">主机组<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-10">
+                                                <select class="form-control"  name="business_unit" id="mod_business_unit" multiple>
+                                                    {% for bussiness in business_list %}
+                                                        <option value="{{ bussiness.id }}">{{ bussiness.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">IDC机房<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-10">
+                                                <select class="form-control"  name="idc" id="mod_idc">
+                                                    {% for idc in idc_list %}
+                                                        <option value="{{ idc.id }}">{{ idc.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">机柜号<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" type="text"  name="cabinet_num" id="mod_cabinet_num"
+                                                       placeholder="机柜号">
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group col-sm-12">
+                                            <div class="col-sm-2">  <h5 style="float:right;">机柜中序号<font style="color:red;"> </font></h5></div>
+                                            <div class="col-sm-10">
+                                                <input class="form-control" type="text"  name="cabinet_order" id="mod_cabinet_order"
+                                                       placeholder="机柜中序号">
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12" style="padding-top: 15px;">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交修改</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="/static/js/plugins/jeditable/jquery.jeditable.js"></script>
+{#    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>#}
+{#    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>#}
+
+{#    <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>#}
+{#    <script src="/static/js/plugins/layer/layer.min.js"></script>#}
+    <script src="/static/js/plugins/footable/footable.all.min.js"></script>
+    <script src="/static/js/content.min.js?v=1.0.0"></script>
+    <script src="/static/js/plugins/iCheck/icheck.min.js"></script>
+    <!-- Chosen -->
+    <script src="/static/js/plugins/chosen/chosen.jquery.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.i-checks').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'iradio_square-green',
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+
+            $('.footable').footable();
+            $('.footable2').footable();
+
+        });
+
+    </script>
+
+    <script>
+        {% if result %}
+        swal("{{ result }}");
+        {% endif %}
+
+        </script>
+
+    <script>
+        $(document).ready(function(){$(".dataTables-example").dataTable(
+            {
+                "order": [], //取消加载后的第一列默认排序
+                "aLengthMenu" : [10, 25, 50, 100], //更改显示记录数选项
+                "iDisplayLength" : 10, //默认显示的记录数
+                "paging": false
+            }
+        );
+
+        var oTable=$("#editable").dataTable();
+        oTable.$("td").editable(
+            "http://www.zi-han.net/theme/example_ajax.php",
+            {
+                "callback":function(sValue,y){
+                    var aPos=oTable.fnGetPosition(this);
+                    oTable.fnUpdate(sValue,aPos[0],aPos[1])
+                },
+                "submitdata":function(value,settings){
+                    return{
+                        "row_id":this.parentNode.getAttribute("id"),
+                        "column":oTable.fnGetPosition(this)[2]
+                    }
+                },
+                "width":"90%",
+                "height":"100%"
+            })});
+
+        function fnClickAddRow(){
+            $("#editable").dataTable().fnAddData(["Custom row","New row","New row","New row","New row"])
+        }
+    </script>
+
+    <script>
+        function refresh(){
+            window.location.reload();
+        }
+    </script>
+
+    <script>
+        $(' .del_confirm').click(function(){
+            return confirm("确认要执行删除操作吗？");
+        });
+        $(' .js_confirm').click(function(){
+            return confirm("确认执行操作吗？");
+        });
+    </script>
+
+    <script>
+        $(' .domain_confirm').click(function(){
+            return confirm("确认要对" + $(this).attr("id") + "执行删除或停止操作吗？");
+        });
+    </script>
+
+
+
+    <script>
+        $("table").on("click",".mod-asset-btn",function () {
+            server_id = $(this).attr('sid');
+            $("#mod_id").val("");
+            $("#mod_hostname").val("");
+            $("#mod_sn").val("");
+            $("#mod_manufacturer").val("");
+            $("#mod_model").val("");
+            $("#mod_manage_ip").val("");
+            $("#mod_os_platform").val("");
+            $("#mod_os_version").val("");
+
+            $("#mod_server_status_id option").attr("selected",false);
+            $("#mod_tags option").prop("selected",false);
+            $("#mod_business_unit option").prop("selected",false);
+            $("#mod_idc option").attr("selected",false);
+            $("#mod_cabinet_num").val("");
+            $("#mod_cabinet_order").val("");
+
+            $.ajax({
+                url: "/cmdb/asset_update",
+                type: "GET",
+                data: {server_id: server_id},
+                dataType: 'JSON',
+                success: function (arg) {
+                    if (arg) {
+                        console.log(arg);
+                        $("#mod_id").val(arg.id);
+                        $("#mod_hostname").val(arg.hostname);
+                        $("#mod_sn").val(arg.sn);
+                        $("#mod_manufacturer").val(arg.manufacturer);
+                        $("#mod_model").val(arg.model);
+                        $("#mod_manage_ip").val(arg.manage_ip);
+                        $("#mod_os_platform").val(arg.os_platform);
+                        $("#mod_os_version").val(arg.os_version);
+
+                        $("#mod_server_status_id [value=" + arg.server_status_id + "]").prop('selected',true);
+                        $("#mod_idc [value=" + arg.idc_id + "]").attr('selected',true);
+                        $.each(arg.tags,function (k,v) {
+                            $("#mod_tags [value=" + v + "]").prop("selected",true);
+                        });
+                        $.each(arg.business_unit,function (k,v) {
+                            $("#mod_business_unit [value=" + v + "]").prop("selected",true);
+                        });
+
+                        //$("#mod_tags [value in " + arg.tags + "]").prop("selected",true);
+                        /*$("#mod_tags option").each(function () {
+                            if($(this).attr("value") in arg.tags){$(this).prop("selected",true);}
+                        });*/
+                        //$("#mod_business_unit [value in " + arg.business_unit + "]").prop("selected",true);
+                        /*$("#mod_business_unit option").each(function () {
+                            if($(this).attr("value") in arg.business_unit){$(this).prop("selected",true);}
+                        });*/
+
+                        /* $.each(arg,function (k,v) {
+                                $("#UpdateModal [name="+ k + "]").attr('value',v)
+                            })
+
+                        }
+                        else{
+
+                        } */
+
+                    }
+                }
+            })
+        })
+    </script>
+
+    <script>
+        $("#top-box").click(function () {
+            if($("#top-box").prop("checked")){
+                $(".i-checks").prop("checked",true)
+            }
+            else {
+                $(".i-checks").prop("checked",false)
+            }
+        })
+    </script>
+
+    <script>
+
+        function init_ms() {
+            var config={
+                ".chosen-select":{},
+                ".chosen-select-deselect":{allow_single_deselect:true},
+                ".chosen-select-no-single":{disable_search_threshold:10},
+                ".chosen-select-no-results":{no_results_text:"Oops, nothing found!"},
+                ".chosen-select-width":{width:"95%"}
+            };
+            for(var selector in config){
+                $(selector).chosen(config[selector])
+            }
+        }
+
+    </script>
+
+
+    <script>
+        el1 = '                                    <select  data-placeholder="选择主机组" name="business_units"  class="chosen-select" multiple style="width:241px;" tabindex="4">\n' +
+            '                                        {% for bussiness in business_list %}\n'+
+                '                                            <option value="{{ bussiness.id }}" >{{ bussiness.name }}</option>\n'
+                +
+                '                                        {% endfor %}\n' +
+            '                                    </select>';
+        el2 = '                                    <select  data-placeholder="选择标签" name="tags"  class="chosen-select" multiple style="width:241px;" tabindex="4">\n' +
+            '                                        {% for tag in tag_list %}\n'+
+                '                                            <option value="{{ tag.id }}">{{ tag.name }}</option>\n'+
+                '                                        {% endfor %}\n' +
+            '                                    </select>';
+        el3 = '                                    <select class="form-control"  name="status_ids">\n' +
+            '                                        <option value="1">上架</option>\n' +
+            '                                        <option value="2">在线</option>\n' +
+            '                                        <option value="3">离线</option>\n' +
+            '                                        <option value="4">下架</option>\n' +
+            '                                    </select>';
+        el4= '    <select data-placeholder="选择任务项" name="taskmethods" class="chosen-select" multiple style="width:241px;" tabindex="4">\n' +
+            '        {% for tm in taskmethod_list %}\n'+
+                '            <option value="{{ tm.id }}">{{ tm.title }}</option>\n'+
+                '        {% endfor %}\n' +
+            '    </select>';
+        el5 = '                                    <select class="form-control" name="task_script_id" id="">\n' +
+            '                                        {% for script in taskscript_list %}\n'+
+                '                                            <option value="{{ script.id }}">{{ script.name }}</option>\n'
+                +
+                '                                        {% endfor %}\n' +
+            '                                    </select>';
+
+        $("#chose-action").on('change',function () {
+            $("#add-action").empty();
+            if($(this).val() == 1){
+                $("#add-action").append(el1);
+                init_ms()
+            }
+            else if($(this).val() == 2){
+                $("#add-action").append(el2);
+                init_ms();
+            }
+            else if($(this).val() == 3){
+                $("#add-action").append(el3)
+            }
+            else if($(this).val() == 4){
+                $("#add-action").append(el4);
+                init_ms();
+            }
+            else if($(this).val() == 5){
+                $("#add-action").append(el5);
+            }
+        }
+        )
+    </script>
+
+    <script>
+        $("#shownv").click(function(){
+            if(this.text=="显示更多"){
+                $("#show-nav").show();
+                $(this).text("隐藏更多");
+            }else{
+                $("#show-nav").hide();
+                $(this).text("显示更多")
+            }
+        });
+
+    </script>
+</body>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:02 GMT -->
+</html>

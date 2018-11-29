@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:01 GMT -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>H+ 后台主题UI框架 - 数据表格</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link rel="shortcut icon" href="../static/favicon.ico">
+    <link href="/static/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+{#    <link href="/static/css/plugins/footable/footable.core.css" rel="stylesheet">#}
+    <link href="/static/css/font-awesome.min93e3.css" rel="stylesheet">
+    <link href="/static/css/animate.min.css" rel="stylesheet">
+    <link href="/static/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/css/gstyle.css" rel="stylesheet">
+    <style>
+        .per-btn {
+            display: inline-block;
+            margin: 1px;
+        }
+    </style>
+</head>
+
+<body class="gray-bg">
+    <!--通知消息处-->
+    {% if result  %}
+        {% if result.code == 0 %}
+            <div class="alert alert-success" style="text-align: center">执行成功:<strong>{{ result.message }}</strong></div>
+        {% else %}
+            <div class="alert alert-danger" style="text-align: center">执行失败:<strong>{{ result.message }}</strong></div>
+        {% endif %}
+    {% endif %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <h5><a href="/index_v3/">首页</a><B style="color:#ccc">/</B> 用户组列表 </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a onclick="window.location.reload()">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </ol>
+                    </div>
+
+                    <div class="ibox-content">
+                        <div class="col-sm-12 m-b-xs" style="padding-bottom: 10px;">
+                            <form method="get">
+                                <div class="col-sm-1"> <!--添加-->
+                                    <a class="btn btn-info" href="#" data-toggle="modal" data-target="#AddModal">+ 添加</a>
+                                </div>
+
+                                <div class="col-sm-1">
+                                    <a id="shownv"  type="button" class="btn btn-warning">显示更多</a>
+                                </div>
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-5 ">
+                                    <input type="text" name="q"  class="form-control"  placeholder="" />
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="submit" value="搜索" class="btn btn-primary" />
+                                        <i class="fa fa-search"></i>&nbsp;&nbsp;搜索
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+
+                             <table class="table table-striped table-bordered table-hover dataTables-example" data-page-size="20">
+                                 <thead>
+                                    <tr>
+                                        <th>用户组名</th>
+                                        <th>拥有权限</th>
+                                        <th>操作(更新/删除)</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+                                    {% for role in query %}
+                                        <tr>
+                                            <td>{{ role.title }}</td>
+                                            <td>
+                                                {% for p in role.permissions.values %}
+                                                    <a class="btn-sm btn-primary per-btn">{{ p.title }}</a>
+                                                {% endfor %}
+                                            </td>
+                                            <td style="font-size: 20px">
+                                                <a class="mod-role-btn" title="修改角色" rid="{{ role.id }}" data-toggle="modal" data-target="#UpdateModal">
+                                                    <i class="fa fa-cog"></i>
+                                                </a>
+                                                <a href="/rbac/roles_del?role_id={{ role.id }}" title="删除角色" class="del_confirm" style="margin-right: 15px"><i class="fa fa-trash"></i></a>
+
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                 </tbody>
+
+                             </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal inmodal" id="AddModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">添加用户组</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" id="signupForm" action="/rbac/roles_add" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户组名：</label>
+                            <div class="col-sm-8">
+                                <input id="title" name="title" class="form-control" type="text">
+                                <span class="help-block m-b-none"><i class="fa fa-info-circle"></i> 填写用户组名称 </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">拥有权限：</label>
+                            <div class="col-sm-4">
+                                <h4 style="color:red">源菜单:</h4>
+                                <select class="form-control"   id="from" multiple size="10">
+                                    {% for p in permission_list %}
+                                        <option value="{{ p.id }}">{{ p.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="btn-group" style="margin-top: 50px;">
+                                    <button type="button" class="btn btn-white" onclick="move('from', 'to')"><i class="fa fa-chevron-right"></i></button>
+                                    <br/>
+                                    <button type="button" class="btn btn-white" onclick="move('to', 'from')"><i class="fa fa-chevron-left"></i> </button>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <h4 style="color:red">目标菜单:</h4>
+                                <select id="to" class="form-control"  name="permissions" size="10" multiple>
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="UpdateModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_mod_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">修改角色信息</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" id="signupForm" action="/rbac/roles_edit" role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input id="mod_id" name="id" class="form-control" type="text">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">用户组名：</label>
+                            <div class="col-sm-8">
+                                <input id="mod_title" name="title" class="form-control" type="text">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">拥有权限：</label>
+                            <div class="col-sm-4">
+                                <h4 style="color:red">源菜单:</h4>
+                                <select class="form-control"   id="permissions_from" multiple size="10">
+
+                                </select>
+                            </div>
+                            <div class="col-sm-1">
+                                <div class="btn-group" style="margin-top: 50px;">
+                                    <button type="button" class="btn btn-white" onclick="move('permissions_from', 'permissions_to')">
+                                        <i class="fa fa-chevron-right"></i>
+                                    </button>
+                                    <br/>
+                                    <button type="button" class="btn btn-white" onclick="move('permissions_to', 'permissions_from')">
+                                        <i class="fa fa-chevron-left"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-sm-4">
+                                <h4 style="color:red">目标菜单:</h4>
+                                <select id="permissions_to" class="form-control"  name="permissions" size="10" multiple>
+
+                                </select>
+                            </div>
+                        </div>
+
+
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 全局js -->
+    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+
+    <script src="/static/js/plugins/jeditable/jquery.jeditable.js"></script>
+    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+{#    <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>#}
+    <script src="/static/js/plugins/layer/layer.min.js"></script>
+    <!-- jQuery Validation plugin javascript-->
+    <script src="/static/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="/static/js/plugins/validate/messages_zh.min.js"></script>
+{#    <script src="/static/js/plugins/footable/footable.all.min.js"></script>#}
+    <!-- 自定义js -->
+    <script src="/static/js/content.min.js?v=1.0.0"></script>
+
+
+    <script>
+
+        $.validator.setDefaults({
+            highlight:function(a){
+                $(a).closest(".form-group").removeClass("has-success").addClass("has-error")
+            },
+            success:function(a){
+                a.closest(".form-group").removeClass("has-error").addClass("has-success")
+            },
+            errorElement:"span",
+            errorPlacement:function(a,b){
+                if(b.is(":radio")||b.is(":checkbox")){a.appendTo(b.parent().parent().parent())}
+                else{a.appendTo(b.parent())}},errorClass:"help-block m-b-none",validClass:"help-block m-b-none"});
+
+        $().ready(function(){
+            $("#commentForm").validate();
+            var a="<i class='fa fa-times-circle'></i> ";
+            $("#signupForm").validate({
+                rules:{
+                    firstname:"required",
+                    lastname:"required",
+                    permissions:"required",
+                    title:{required:true,minlength:2},
+                    password:{required:true,minlength:5},
+                    confirm_password:{required:true,minlength:5,equalTo:"#password"},
+                    email:{required:true,email:true},
+                    topic:{required:"#newsletter:checked",minlength:2},
+                    agree:"required"
+                },
+                messages:{
+                    firstname:a+"请输入你的姓",
+                    lastname:a+"请输入您的名字",
+                    permissions:a+"请至少选择一个权限",
+                    title:{required:a+"请输入用户组名",minlength:a+"组名必须两个字符以上"},
+                    password:{required:a+"请输入您的密码",minlength:a+"密码必须5个字符以上"},
+                    confirm_password:{required:a+"请再次输入密码",minlength:a+"密码必须5个字符以上",equalTo:a+"两次输入的密码不一致"},
+                    email:a+"请输入正确的E-mail",
+                    agree:{required:a+"必须同意协议后才能注册",element:"#agree-error"}
+                }
+            });
+            /*
+            $("#username").focus(function(){
+                var c=$("#firstname").val();
+                var b=$("#lastname").val();
+                if(c&&b&&!this.value){this.value=c+"."+b}
+            }) */
+        });
+
+    </script>
+
+
+
+    <script>
+        $(document).ready(function(){$(".dataTables-example").dataTable(
+            {"order": [[ 1, "desc" ]]}
+        );var oTable=$("#editable").dataTable();oTable.$("td").editable("http://www.zi-han.net/theme/example_ajax.php",{"callback":function(sValue,y){var aPos=oTable.fnGetPosition(this);oTable.fnUpdate(sValue,aPos[0],aPos[1])},"submitdata":function(value,settings){return{"row_id":this.parentNode.getAttribute("id"),"column":oTable.fnGetPosition(this)[2]}},"width":"90%","height":"100%"})});function fnClickAddRow(){$("#editable").dataTable().fnAddData(["Custom row","New row","New row","New row","New row"])};
+    </script>
+
+
+    <script>
+        $(document).ready(function() {
+
+            $('.footable').footable();
+            $('.footable2').footable();
+
+        });
+
+    </script>
+
+    <script>
+        {% if result %}
+        swal("{{ result }}");
+        {% endif %}
+
+        </script>
+
+
+    <script>
+        function refresh(){
+            window.location.reload();
+        }
+    </script>
+
+    <script>
+        $(' .del_confirm').click(function(){
+            return confirm("确认要执行删除操作吗？");
+        });
+        $(' .js_confirm').click(function(){
+            return confirm("确认执行操作吗？");
+        });
+    </script>
+
+    <script>
+        $(' .domain_confirm').click(function(){
+            return confirm("确认要对" + $(this).attr("id") + "执行删除或停止操作吗？");
+        });
+    </script>
+
+    <script>
+    // 如果通知元素存在,则5秒后淡出
+        if ($(".alert")){
+            $(".alert").fadeOut(3000);
+        }
+    </script>
+
+    <script>
+        function move(from, to, from_o, to_o) {
+            $("#" + from + " option").each(function () {
+                if ($(this).prop("selected") == true) {
+                    $("#" + to).append(this);
+                    if( typeof from_o !== 'undefined'){
+                        $("#"+to_o).append($("#"+from_o +" option[value='"+this.value+"']"));
+                    }
+                }
+            });
+        }
+    </script>
+
+    <script>
+        $("table").on("click",".mod-role-btn",function () {
+            role_id = $(this).attr('rid');
+            $("#mod_id").val("");
+            $("#mod_title").val("");
+            $("#permissions_from").empty();
+            $("#permissions_to").empty();
+
+            $.ajax({
+                url: "/rbac/roles_edit",
+                type: "GET",
+                data: {role_id: role_id},
+                dataType: 'JSON',
+                success: function (arg) {
+                    if (arg) {
+                        //console.log(arg);
+                        $("#mod_id").val(arg.id);
+                        $("#mod_title").val(arg.title);
+
+                        $.each(arg.from_list,function (k,v) {
+                            $("#permissions_from").append("<option value="+v[0]+">"+v[1]+"</options>")
+                        });
+                        $.each(arg.to_list,function (k,v) {
+                            $("#permissions_to").append("<option value="+v[0]+">"+v[1]+"</options>")
+                        });
+                        $("#permissions_to option").prop("selected",true);
+
+                    }
+                }
+            })
+        })
+    </script>
+
+
+</body>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:02 GMT -->
+</html>
