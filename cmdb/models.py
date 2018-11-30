@@ -50,7 +50,7 @@ class Server(models.Model):
     """
     # asset = models.OneToOneField('Asset')
 
-
+    cert_id = models.CharField('唯一ID',max_length=64,null=True, blank=True)
     idc = models.ForeignKey(IDC,null=True, blank=True)
     cabinet_num = models.CharField('机柜号', max_length=30, null=True, blank=True)
     cabinet_order = models.CharField('机柜中序号', max_length=30, null=True, blank=True)

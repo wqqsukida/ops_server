@@ -11,6 +11,7 @@ class UserProfile(models.Model):
     mobile = models.CharField('手机', max_length=32)
     roles = models.ManyToManyField(verbose_name='具有的所有角色', to="Role", blank=True)
     is_admin = models.BooleanField(default=False)
+    servers = models.ManyToManyField(verbose_name='关注主机列表',to="cmdb.Server",blank=True)
     class Meta:
         verbose_name_plural = "用户表"
 

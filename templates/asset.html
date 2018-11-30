@@ -192,16 +192,16 @@
                                  <thead>
                                     <tr>
                                         <th></th>
-                                        <th>主机名</th>
-                                        <th>SN</th>
                                         <th>管理IP</th>
+                                        <th>主机名</th>
                                         <th>操作系统</th>
-                                        <th>CPU个数</th>
-                                        <th>IDC</th>
                                         <th>主机组</th>
                                         <th>TAGS</th>
                                         <th>状态</th>
 
+                                        <th data-hide="all">SN</th>
+                                        <th data-hide="all">CPU个数</th>
+                                        <th data-hide="all">IDC</th>
                                         <th data-hide="all">制造商</th>
                                         <th data-hide="all">型号</th>
                                         <th data-hide="all">系统版本</th>
@@ -211,7 +211,7 @@
                                         <th data-hide="all">修改日期</th>
                                         <th data-hide="all">机柜号</th>
                                         <th data-hide="all">客户端版本</th>
-                                        <th>操作(更新/删除/任务)</th>
+                                        <th>操作(更新/删除)</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -222,14 +222,12 @@
                                             </td>
                                             <td class="tooltip-demo">
                                                 <a data-toggle="tooltip" data-placement="right" title="主机详情" class="btn-white btn-sm" href="/cmdb/asset_detail?id={{ asset.id }}">
-                                                    {{ asset.hostname }}
+                                                    {{ asset.manage_ip }}
                                                 </a>
                                             </td>
-                                            <td>{{ asset.sn }}</td>
-                                            <td>{{ asset.manage_ip }}</td>
+                                            <td>{{ asset.hostname }}</td>
                                             <td>{{ asset.os_platform }}</td>
-                                            <td>{{ asset.cpu_count }}</td>
-                                            <td>{{ asset.idc.name }}</td>
+
                                             <td>
                                                 {% for b in asset.business_unit.values  %}
                                                     <a class="btn btn-success btn-outline btn-xs">{{ b.name }}</a>
@@ -252,7 +250,9 @@
                                                 {% endif %}
                                             </td>
 
-
+                                            <td>{{ asset.sn }}</td>
+                                            <td>{{ asset.cpu_count }}</td>
+                                            <td>{{ asset.idc.name }}</td>
                                             <td>{{ asset.manufacturer }}</td>
                                             <td>{{ asset.model }}</td>
                                             <td>{{ asset.os_version }}</td>
@@ -269,9 +269,11 @@
                                                 <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/asset_del?server_id={{ asset.id }}&page={{ page }}" title="删除主机" class="del_confirm" style="margin-left: 15px">
                                                     <i class="fa fa-trash"></i>
                                                 </a>
+                                                <!--
                                                 <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_task_status/{{ asset.id }}////" title="任务列表" style="margin-left: 15px">
                                                     <i class="fa fa-cubes"></i>
                                                 </a>
+                                                -->
                                             </td>
                                         </tr>
                                     {% endfor %}

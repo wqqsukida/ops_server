@@ -110,8 +110,48 @@ def index(request):
 
 
 def index_v3(request):
+    '''
+    首页
+    :param request:
+    :return:
+    '''
+    user_dict = request.session.get('is_login', None)
+    user_obj = UserProfile.objects.get(name=user_dict['user'])
+    focus_query = user_obj.servers.all()
+    # 加载分页器
+    queryset, page_html = init_paginaion(request, focus_query)
 
     return render(request,'index_v3.html',locals())
+
+def add_focus(request):
+    user_dict = request.session.get('is_login', None)
+    user_obj = UserProfile.objects.get(name=user_dict['user'])
+    if request.method == "POST":
+
+        host_lists = request.POST.getlist('host_lists')
+        for server_id in host_lists:
+            user_obj.servers.add(Server.objects.get(id=server_id))
+
+        return HttpResponseRedirect('/index_v3/')
+
+    elif request.method == "GET":
+        query = Server.objects.all()
+        focus_query = user_obj.servers.all()
+
+        all_hosts = {(h.id,h.manage_ip)for h in query}
+        focus_hosts = {(h.id,h.manage_ip) for h in focus_query}
+        hosts = all_hosts - focus_hosts
+        return HttpResponse(json.dumps(list(hosts)))
+
+def del_focus(request):
+    if request.method == "GET":
+        user_dict = request.session.get('is_login', None)
+        user_obj = UserProfile.objects.get(name=user_dict['user'])
+        host_id = request.GET.get('host_id')
+        server_obj = Server.objects.get(id=host_id)
+        user_obj.servers.remove(server_obj)
+
+        return HttpResponseRedirect('/index_v3/')
 #========================================================================#
 def asset_list(request):
     if request.method == "GET":
@@ -359,17 +399,28 @@ def ssd_list(request):
         page = request.GET.get("page")
         status = request.GET.get("status", "")
         message = request.GET.get("message", "")
+        server_id = request.GET.get("sid")
         if status.isdigit():
             result = {"code":int(status),"message":message}
 
-        search_q = request.GET.get('q','')
+        search_q = request.GET.get('q','').strip()
+        q_query = Q(Q(node__contains=search_q)|
+                    Q(sn__contains=search_q)|
+                    Q(fw_rev__contains=search_q)|
+                    Q(model__contains=search_q)|
+                    Q(server_obj__hostname__contains=search_q)
+                    )
         user_dict = request.session.get('is_login', None)
-        if UserProfile.objects.get(name=user_dict['user']).is_admin :
-            queryset = Nvme_ssd.objects.filter(node__contains=search_q)
-        else:
-            queryset = Nvme_ssd.objects.filter(node__contains=search_q,
-                                               server_obj__business_unit__roles__userprofile__name=user_dict['user'])
-
+        if server_id: #从主机列表访问
+            server_obj = Server.objects.get(id=server_id)
+            queryset = Nvme_ssd.objects.filter(q_query,server_obj=server_obj)
+        # if UserProfile.objects.get(name=user_dict['user']).is_admin :
+        #     queryset = Nvme_ssd.objects.filter(node__contains=search_q)
+        # else:
+        #     queryset = Nvme_ssd.objects.filter(node__contains=search_q,
+        #                                        server_obj__business_unit__roles__userprofile__name=user_dict['user'])
+        else: #从ssd管理访问
+            queryset = Nvme_ssd.objects.filter(q_query)
         # 加载分页器
         queryset, page_html = init_paginaion(request, queryset)
 

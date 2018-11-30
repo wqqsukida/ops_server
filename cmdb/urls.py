@@ -17,7 +17,8 @@ from django.conf.urls import url
 from django.contrib import admin
 from . import views
 urlpatterns = [
-
+    url(r'^add_focus', views.add_focus),  # 首页添加关注主机
+    url(r'^del_focus', views.del_focus),  # 首页删除关注主机
     url(r'^asset_list', views.asset_list),
     url(r'^asset_detail', views.asset_detail), #主机详情
     url(r'^asset_add', views.asset_add),
