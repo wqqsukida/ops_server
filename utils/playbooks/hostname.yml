@@ -1,0 +1,6 @@
+---
+# hostname.yml
+- hosts: all
+  tasks:
+  - name: hostname
+    shell: hostname

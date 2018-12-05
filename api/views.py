@@ -82,10 +82,10 @@ class APIAuthView(APIView):
                 print('[{0}]:{1}'.format(clien_ip, res))
                 return HttpResponse(json.dumps(res))
 
-            if client_md5_str in SIGN_RECORD:
-                res = {'code': 6, 'msg': 'token已被使用!'}
-                print('[{0}]:{1}'.format(clien_ip, res))
-                return HttpResponse(json.dumps(res))
+            # if client_md5_str in SIGN_RECORD:
+            #     res = {'code': 6, 'msg': 'token已被使用!'}
+            #     print('[{0}]:{1}'.format(clien_ip, res))
+            #     return HttpResponse(json.dumps(res))
 
             server_md5_str = encrypt("%s|%s" % (key, client_ctime,))
             if server_md5_str != client_md5_str:
@@ -93,11 +93,11 @@ class APIAuthView(APIView):
                 print('[{0}]:{1}'.format(clien_ip, res))
                 return HttpResponse(json.dumps(res))
 
-            SIGN_RECORD[server_md5_str] = client_ctime
-            SIGN_RECORD_copy = copy.deepcopy(SIGN_RECORD)
-            for k,v in SIGN_RECORD_copy.items():
-                if float(v) + 20 < float(client_ctime):
-                    SIGN_RECORD.pop(k)
+            # SIGN_RECORD[server_md5_str] = client_ctime
+            # SIGN_RECORD_copy = copy.deepcopy(SIGN_RECORD)
+            # for k,v in SIGN_RECORD_copy.items():
+            #     if float(v) + 20 < float(client_ctime):
+            #         SIGN_RECORD.pop(k)
 
             # print(SIGN_RECORD)
         else:
@@ -150,4 +150,23 @@ class TaskView(APIAuthView):
     # @method_decorator(api_auth)
     def post(self,request,*args,**kwargs):
         response = {}
+        # fd = datetime.datetime.now()
+        res = json.loads(request.body.decode('utf-8'))    #结果必须为字典形式
+
+        s_obj = models.Server.objects.filter(cert_id=res.get('cert_id')).first()
+        if s_obj:
+            models.Task.objects.update_or_create(server_obj=s_obj,defaults=res.get('task_res'))
+        # t_obj = models.Task.objects.filter(server=s_obj)
+        # t_obj.update()
+        # cd = t_obj.first().create_date
+        # rt = fd - cd  # 计算出实际运行时间
+        # # for res in res_list:
+        # if res.get('task_res'):
+        #     t_obj.update(status = 2 , finished_date = fd,
+        #                   run_time = rt ,
+        #                   task_res=res.get('task_res'))
+        # else:
+        #     t_obj.update(status = 3 , finished_date = fd,
+        #                   run_time = rt)
+
         return HttpResponse(json.dumps(response))

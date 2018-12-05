@@ -71,7 +71,7 @@ class Memory(object):
     def add_mem(self, val_dict):
         try:
             with transaction.atomic():
-                record = "添加内存{0}至{1}".format(val_dict['slot'], self.server_obj.hostname)
+                record = "添加内存{0}至{1}".format(val_dict['slot'], self.server_obj.manage_ip)
                 val_dict['server_obj'] = self.server_obj
                 models.Memory.objects.create(**val_dict)
                 models.ServerRecord.objects.create(server_obj=self.server_obj,
@@ -83,7 +83,7 @@ class Memory(object):
     def del_mem(self, del_mem_list):
         try:
             with transaction.atomic():
-                record = "删除内存:{0}从{1}".format(del_mem_list, self.server_obj.hostname)
+                record = "删除内存:{0}从{1}".format(del_mem_list, self.server_obj.manage_ip)
                 models.Memory.objects.filter(server_obj=self.server_obj,
                                           slot__in=del_mem_list).delete()
 
@@ -106,7 +106,7 @@ class Memory(object):
                     #     old_val = str(old_val)
 
                     if old_val != new_val:
-                        record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.hostname,
+                        record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.manage_ip,
                                                                  val_dict['slot'], k, old_val,
                                                                  new_val)
                         record_list.append(record)

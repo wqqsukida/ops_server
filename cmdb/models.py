@@ -50,7 +50,8 @@ class Server(models.Model):
     """
     # asset = models.OneToOneField('Asset')
 
-    cert_id = models.CharField('唯一ID',max_length=64,null=True, blank=True)
+    cert_id = models.CharField('唯一ID',max_length=64,unique=True)
+    comment = models.CharField('备注信息',max_length=32,null=True,blank=True)
     idc = models.ForeignKey(IDC,null=True, blank=True)
     cabinet_num = models.CharField('机柜号', max_length=30, null=True, blank=True)
     cabinet_order = models.CharField('机柜中序号', max_length=30, null=True, blank=True)
@@ -69,7 +70,7 @@ class Server(models.Model):
 
     server_status_id = models.IntegerField(choices=server_status_choices, default=1)
 
-    hostname = models.CharField(max_length=128, unique=True)
+    hostname = models.CharField(max_length=128,null=True,blank=True)
     sn = models.CharField('SN号', max_length=128, db_index=True)
     manufacturer = models.CharField(verbose_name='制造商', max_length=64, null=True, blank=True)
     model = models.CharField('型号', max_length=64, null=True, blank=True)
@@ -230,3 +231,14 @@ class ServerRecord(models.Model):
     def __str__(self):
         return self.server_obj.hostname
 
+class Task(models.Model):
+    '''
+
+    '''
+    server_obj = models.OneToOneField(to='Server',related_name='server_task')
+    name = models.CharField('任务名',max_length=64,null=True,blank=True)
+    args = models.CharField('任务参数',max_length=128,null=True,blank=True)
+    path = models.CharField('路径',max_length=256,null=True,blank=True)
+    status = models.IntegerField('任务状态',default='0',null=True,blank=True)
+    msg = models.TextField('任务信息',null=True,blank=True)
+    elapsed = models.CharField('执行时间',max_length=32,null=True,blank=True)

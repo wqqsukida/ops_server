@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'cmdb.apps.CmdbConfig',
     'rbac.apps.RbacConfig',
     'rest_framework',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +150,9 @@ VALID_URL= [
     '^/api/test/',
     '^/cmdb/add_focus',
     '^/cmdb/del_focus',
+    '^/cmdb/add_comment',
+    '^/cmdb/ssd_list',
+    '^/cmdb/ssd_smartlog',
     # '^/cmdb/asset_list/',
 ]
 
@@ -165,7 +169,7 @@ PLUGIN_ITEMS = {
 
 ##################### Nvme Settings ###################################
 
-SMART_LOG_LIMIT_TIME = 1    #数据库保留smart_log天数
+SMART_LOG_LIMIT_TIME = 0.1    #数据库保留smart_log天数
 
 
 ##################### 分页器设置 ########################################
@@ -183,3 +187,8 @@ SESSION_COOKIE_HTTPONLY = True  # 是否Session的cookie只支持http传输（�
 # SESSION_COOKIE_AGE = 3600  # Session的cookie失效日期（1小时）（默认1209600 2周）
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # 是否关闭浏览器使得Session过期（默认False）
 SESSION_SAVE_EVERY_REQUEST = True  # 是否每次请求都保存Session，默认修改之后才保存（默认False）
+
+#################### django-crontab ####################################
+CRONJOBS = [
+    ('*/30 * * * *','cmdb.cron_task.refresh_server','>> /tmp/cmdb_refresh.log')
+]

@@ -18,7 +18,7 @@ class PluginManger(object):
         :return: 1,执行完全成功； 2, 局部失败；3，执行失败;4. 服务器不存在
         """
         ret = {'code': 1,'msg':{}}
-        cert_id = server_dict.get('cert')
+        cert_id = server_dict.get('cert').strip()
         server_obj = models.Server.objects.filter(cert_id=cert_id).first()
         if not server_obj:
             # 不存在则添加主机

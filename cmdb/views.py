@@ -115,13 +115,22 @@ def index_v3(request):
     :param request:
     :return:
     '''
-    user_dict = request.session.get('is_login', None)
-    user_obj = UserProfile.objects.get(name=user_dict['user'])
-    focus_query = user_obj.servers.all()
-    # 加载分页器
-    queryset, page_html = init_paginaion(request, focus_query)
+    if request.method == "GET":
+        page = request.GET.get("page")
+        status = request.GET.get("status", "")
+        message = request.GET.get("message", "")
+        if status.isdigit():
+            result = {"code": int(status), "message": message}
 
-    return render(request,'index_v3.html',locals())
+
+
+        user_dict = request.session.get('is_login', None)
+        user_obj = UserProfile.objects.get(name=user_dict['user'])
+        focus_query = user_obj.servers.all()
+        # 加载分页器
+        queryset, page_html = init_paginaion(request, focus_query)
+
+        return render(request,'index_v3.html',locals())
 
 def add_focus(request):
     user_dict = request.session.get('is_login', None)
@@ -152,6 +161,25 @@ def del_focus(request):
         user_obj.servers.remove(server_obj)
 
         return HttpResponseRedirect('/index_v3/')
+
+def add_comment(request):
+    if request.method == "POST":
+        sid = request.POST.get("sid")
+        comment = request.POST.get("comment")
+
+        try:
+            s_obj = Server.objects.get(id=sid)
+            setattr(s_obj,'comment',comment)
+            s_obj.save()
+            result = {"code": 0, "message": "添加备注成功！"}
+        except Exception as e:
+            result = {"code": 1, "message": str(e)}
+
+        return HttpResponseRedirect('/index_v3/?status={0}&message={1}'.
+                            format(result.get("code", ""),
+                                   result.get("message", ""),
+                                   ))
+
 #========================================================================#
 def asset_list(request):
     if request.method == "GET":

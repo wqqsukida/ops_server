@@ -68,7 +68,7 @@ class Disk(object):
     def add_disk(self,val_dict):
         try:
             with transaction.atomic():
-                record = "添加硬盘slot{0}至{1}".format(val_dict['slot'],self.server_obj.hostname)
+                record = "添加硬盘slot{0}至{1}".format(val_dict['slot'],self.server_obj.manage_ip)
                 val_dict['server_obj'] = self.server_obj
                 models.Disk.objects.create(**val_dict)
                 models.ServerRecord.objects.create(server_obj=self.server_obj,
@@ -80,7 +80,7 @@ class Disk(object):
     def del_disk(self,del_slot_list):
         try:
             with transaction.atomic():
-                record = "删除硬盘slot{0}从{1}".format(del_slot_list,self.server_obj.hostname)
+                record = "删除硬盘slot{0}从{1}".format(del_slot_list,self.server_obj.manage_ip)
                 models.Disk.objects.filter(server_obj=self.server_obj,
                                            slot__in=del_slot_list).delete()
 
@@ -103,7 +103,7 @@ class Disk(object):
                     #     old_val = str(old_val)
 
                     if old_val != new_val:
-                        record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.hostname,
+                        record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.manage_ip,
                                                                  val_dict['slot'],k, old_val,
                                                                  new_val)
                         record_list.append(record)

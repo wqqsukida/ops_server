@@ -81,7 +81,7 @@ class Nvme_ssd(object):
     def add_disk(self,val_dict):
         try:
             with transaction.atomic():
-                record = "添加SSD:{0}至{1}".format(val_dict['node'],self.server_obj.hostname)
+                record = "添加SSD:{0}至{1}".format(val_dict['node'],self.server_obj.manage_ip)
                 val_dict['server_obj'] = self.server_obj
                 smart_log = val_dict.pop('smart_log')
                 ssd_obj = models.Nvme_ssd.objects.create(**val_dict)
@@ -98,7 +98,7 @@ class Nvme_ssd(object):
     def del_disk(self,del_ssd_list):
         try:
             with transaction.atomic():
-                record = "删除SSD:{0}从{1}".format(del_ssd_list,self.server_obj.hostname)
+                record = "删除SSD:{0}从{1}".format(del_ssd_list,self.server_obj.manage_ip)
                 models.Nvme_ssd.objects.filter(server_obj=self.server_obj,
                                            node__in=del_ssd_list).delete()
 
@@ -126,7 +126,7 @@ class Nvme_ssd(object):
                         old_val = str(old_val)
 
                     if old_val != new_val:
-                        record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.hostname,
+                        record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.manage_ip,
                                                                  val_dict['node'],k, old_val,
                                                                  new_val)
                         record_list.append(record)

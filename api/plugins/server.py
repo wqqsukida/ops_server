@@ -43,7 +43,7 @@ class Server(object):
                         old_val = str(old_val)
 
                     if old_val != new_val:
-                        record = "[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.hostname, k, old_val, new_val)
+                        record = "[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.manage_ip, k, old_val, new_val)
                         record_list.append(record)
                         setattr(self.server_obj, k, new_val)
                     if not self.user_obj:   #如果不是用户主动修改,则更新主机状态和日期

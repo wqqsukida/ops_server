@@ -68,7 +68,7 @@ class Nic(object):
     def add_nic(self,val_dict):
         try:
             with transaction.atomic():
-                record = "添加网卡:{0}至{1}".format(val_dict['name'],self.server_obj.hostname)
+                record = "添加网卡:{0}至{1}".format(val_dict['name'],self.server_obj.manage_ip)
                 val_dict['server_obj'] = self.server_obj
                 models.NIC.objects.create(**val_dict)
                 models.ServerRecord.objects.create(server_obj=self.server_obj,
@@ -80,7 +80,7 @@ class Nic(object):
     def del_nic(self,del_nic_list):
         try:
             with transaction.atomic():
-                record = "删除网卡:{0}从{1}".format(del_nic_list,self.server_obj.hostname)
+                record = "删除网卡:{0}从{1}".format(del_nic_list,self.server_obj.manage_ip)
                 models.NIC.objects.filter(server_obj=self.server_obj,
                                            name__in=del_nic_list).delete()
 
@@ -103,7 +103,7 @@ class Nic(object):
                         old_val = str(old_val)
 
                     if old_val != new_val:
-                        record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.hostname,
+                        record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.manage_ip,
                                                                  val_dict['name'],k, old_val,
                                                                  new_val)
                         record_list.append(record)
