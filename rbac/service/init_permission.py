@@ -13,7 +13,12 @@ def init_permission(user_obj,request):
                                         'permissions__url',
                                         ).distinct()
 
-    menu_permission_list = ['/index_v3/','/index/']
+    menu_permission_list = ['/index_v3/','/index/',
+                            '^/cmdb/add_focus',
+                            '^/cmdb/del_focus',
+                            '^/cmdb/add_comment',
+                            '^/cmdb/ssd_list',
+                            '^/cmdb/ssd_smartlog',]
     for item in permission_list:
         # tpl = {
         #     'id':item['permissions__id'],

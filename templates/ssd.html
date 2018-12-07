@@ -107,6 +107,7 @@
                                         <th>
 {#                                            <input type="checkbox" id="top-box" class="i-checks">#}
                                         </th>
+                                        <th>manage_ip</th>
                                         <th>node</th>
                                         <th>sn</th>
                                         <th>model</th>
@@ -114,8 +115,7 @@
                                         <th>usage</th>
                                         <th>format</th>
                                         <th>fw_rev</th>
-                                        <th>server_name</th>
-                                        <th>操作</th>
+                                        <th>详情</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -124,6 +124,7 @@
                                             <td>
                                                 <input type="checkbox"  class="i-checks" name="input_chk" value="{{ ssd.id }}">
                                             </td>
+                                            <td><a class="btn-info btn-sm">{{ ssd.server_obj.manage_ip}}</a></td>
                                             <td>{{ ssd.node}}</td>
                                             <td>{{ ssd.sn}}</td>
                                             <td>{{ ssd.model}}</td>
@@ -131,7 +132,6 @@
                                             <td>{{ ssd.usage}}</td>
                                             <td>{{ ssd.format}}</td>
                                             <td>{{ ssd.fw_rev}}</td>
-                                            <td><a class="btn-info btn-sm">{{ ssd.server_obj.hostname}}</a></td>
                                             <td class="tooltip-demo" style="font-size: 20px">
                                                 <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/ssd_smartlog?ssd_id={{ ssd.id }}" title="Smart_Log" >
                                                     <i class="fa fa-bar-chart-o"></i>

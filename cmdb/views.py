@@ -126,7 +126,11 @@ def index_v3(request):
 
         user_dict = request.session.get('is_login', None)
         user_obj = UserProfile.objects.get(name=user_dict['user'])
-        focus_query = user_obj.servers.all()
+        focus_query = user_obj.servers.all().order_by('-create_at')
+        search_q = request.GET.get('q', '')
+
+        if search_q:
+            focus_query = focus_query.filter(manage_ip__contains=search_q)
         # 加载分页器
         queryset, page_html = init_paginaion(request, focus_query)
 
@@ -153,12 +157,18 @@ def add_focus(request):
         return HttpResponse(json.dumps(list(hosts)))
 
 def del_focus(request):
+    user_dict = request.session.get('is_login', None)
+    user_obj = UserProfile.objects.get(name=user_dict['user'])
     if request.method == "GET":
-        user_dict = request.session.get('is_login', None)
-        user_obj = UserProfile.objects.get(name=user_dict['user'])
         host_id = request.GET.get('host_id')
         server_obj = Server.objects.get(id=host_id)
         user_obj.servers.remove(server_obj)
+    elif request.method == "POST":
+        id_list = request.POST.getlist("input_chk", None)
+        print(id_list)
+        server_objs = Server.objects.filter(id__in=id_list)
+        for s in server_objs:
+            user_obj.servers.remove(s)
 
         return HttpResponseRedirect('/index_v3/')
 
@@ -221,7 +231,7 @@ def asset_list(request):
                                                Q(os_platform__contains=search_q) |
                                                Q(idc__name__contains=search_q) |
                                                Q(business_unit__name__contains=search_q) |
-                                               Q(tags__name__contains=search_q))).distinct()
+                                               Q(tags__name__contains=search_q))).distinct().order_by("-create_at")
         else:
             queryset = Server.objects.filter(Q(Q(hostname__contains=search_q) |
                                                Q(sn__contains=search_q) |
@@ -230,14 +240,14 @@ def asset_list(request):
                                                Q(idc__name__contains=search_q) |
                                                Q(business_unit__name__contains=search_q) |
                                                Q(tags__name__contains=search_q)),
-                       business_unit__roles__userprofile__name=user_dict['user']).distinct()
+                       business_unit__roles__userprofile__name=user_dict['user']).distinct().order_by("-create_at")
         # 加载快速组合筛选
         if business_unit:
-            queryset = queryset.filter(business_unit__in=business_unit).distinct()
+            queryset = queryset.filter(business_unit__in=business_unit).distinct().order_by("-create_at")
         if server_status_id:
-            queryset = queryset.filter(server_status_id=server_status_id).distinct()
+            queryset = queryset.filter(server_status_id=server_status_id).distinct().order_by("-create_at")
         if tags:
-            queryset = queryset.filter(tags__in=tags).distinct()
+            queryset = queryset.filter(tags__in=tags).distinct().order_by("-create_at")
         idc_list = IDC.objects.all()
         tag_list = Tag.objects.all()
         business_list = BusinessUnit.objects.all()
@@ -436,7 +446,7 @@ def ssd_list(request):
                     Q(sn__contains=search_q)|
                     Q(fw_rev__contains=search_q)|
                     Q(model__contains=search_q)|
-                    Q(server_obj__hostname__contains=search_q)
+                    Q(server_obj__manage_ip__contains=search_q)
                     )
         user_dict = request.session.get('is_login', None)
         if server_id: #从主机列表访问
@@ -448,7 +458,7 @@ def ssd_list(request):
         #     queryset = Nvme_ssd.objects.filter(node__contains=search_q,
         #                                        server_obj__business_unit__roles__userprofile__name=user_dict['user'])
         else: #从ssd管理访问
-            queryset = Nvme_ssd.objects.filter(q_query)
+            queryset = Nvme_ssd.objects.filter(q_query).order_by('server_obj__manage_ip')
         # 加载分页器
         queryset, page_html = init_paginaion(request, queryset)
 

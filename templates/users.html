@@ -25,6 +25,7 @@
     <link href="/static/css/animate.min.css" rel="stylesheet">
     <link href="/static/css/style.min862f.css?v=4.1.0" rel="stylesheet">
     <link href="/static/css/gstyle.css" rel="stylesheet">
+    <link href="/static/css/plugins/switchery/switchery.css" rel="stylesheet">
 </head>
 
 <body class="gray-bg">
@@ -92,6 +93,7 @@
                                         <th>座机</th>
                                         <th>手机</th>
                                         <th>所属用户组</th>
+                                        <th>是否为管理员</th>
                                         <th>操作(更新/删除/修改密码)</th>
                                     </tr>
                                  </thead>
@@ -109,6 +111,7 @@
                                                     <a class="btn-sm btn-primary">{{ r.title }}</a>
                                                 {% endfor %}
                                             </td>
+                                            <td>{{ user.is_admin }}</td>
                                             <td style="font-size: 20px">
                                                 <a class="mod-user-btn" title="修改用户信息" uid="{{ user.id }}" data-toggle="modal" data-target="#UpdateModal">
                                                     <i class="fa fa-cog"></i>
@@ -254,6 +257,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">设置为管理员：</label>
+                            <div class="col-sm-5" style="padding:8px 30px">
+                                <div class="switch">
+                                    <div class="onoffswitch">
+                                        <input name="is_admin" type="checkbox" class="onoffswitch-checkbox" id="is_admin">
+                                        <label class="onoffswitch-label" for="is_admin">
+                                            <span class="onoffswitch-inner"></span>
+                                            <span class="onoffswitch-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
 
                         <hr width="100%" />
@@ -331,6 +348,8 @@
 {#    <script src="/static/js/plugins/footable/footable.all.min.js"></script>#}
     <!-- 自定义js -->
     <script src="/static/js/content.min.js?v=1.0.0"></script>
+    <!-- Switchery -->
+    <script src="/static/js/plugins/switchery/switchery.js"></script>
 
 
     <script>
@@ -446,7 +465,7 @@
             $("#mod_email").val("");
             $("#mod_mobile").val("");
             $("#mod_phone").val("");
-
+            $("#is_admin").prop("checked",false);
             $("#mod_roles option").prop("selected",false);
 
             $.ajax({
@@ -461,7 +480,9 @@
                         $("#mod_email").val(arg.email);
                         $("#mod_mobile").val(arg.mobile);
                         $("#mod_phone").val(arg.phone);
-
+                        if(arg.is_admin){
+                            $("#is_admin").prop("checked",true);
+                        }
                         $.each(arg.roles,function (k,v) {
                             $("#mod_roles [value=" + v + "]").prop("selected",true);
                         });

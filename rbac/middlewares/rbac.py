@@ -34,6 +34,7 @@ class RbacMiddleware(MiddlewareMixin):
             if re.match(url,current_url):
                 return None
         # 用户是否登陆
+        # print(request.session.__dict__)
         user_session = request.session.get("is_login")
         if not user_session:
             return redirect('/login/')

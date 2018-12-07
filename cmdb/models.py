@@ -121,12 +121,12 @@ class Nvme_ssd(models.Model):
     Nvme_ssd
     """
     node = models.CharField('',max_length=64)
-    sn = models.CharField('SN号', max_length=128, db_index=True)
-    model = models.CharField('SSD型号', max_length=256)
-    namespace = models.CharField('', max_length=32)
-    usage = models.CharField('使用情况', max_length=128)
-    format = models.CharField('', max_length=128)
-    fw_rev = models.CharField('', max_length=64)
+    sn = models.CharField('SN号', max_length=128, db_index=True,null=True)
+    model = models.CharField('SSD型号', max_length=256,null=True)
+    namespace = models.CharField('', max_length=32,null=True)
+    usage = models.CharField('使用情况', max_length=128,null=True)
+    format = models.CharField('', max_length=128,null=True)
+    fw_rev = models.CharField('', max_length=64,null=True)
     server_obj = models.ForeignKey('Server', related_name='nvme_ssd')
 
     class Meta:

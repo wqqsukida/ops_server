@@ -136,7 +136,7 @@ STATIC_ROOT = os.path.join(BASE_DIR,'static')
 ############################ 权限管理相关 ################################
 PERMISSION_MENU_KEY = "%&^%hdgddadsa&^ddadasd"
 PERMISSION_URL_DICT_KEY = "lgdjfsjsgvsctewtg"
-
+# 不用登陆可访问页面
 VALID_URL= [
     '^/login/',
     # '^/index/',
@@ -148,11 +148,6 @@ VALID_URL= [
     '^/api/stask/',
     '^/api/file/',
     '^/api/test/',
-    '^/cmdb/add_focus',
-    '^/cmdb/del_focus',
-    '^/cmdb/add_comment',
-    '^/cmdb/ssd_list',
-    '^/cmdb/ssd_smartlog',
     # '^/cmdb/asset_list/',
 ]
 

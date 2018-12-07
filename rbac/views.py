@@ -90,12 +90,13 @@ def users_edit(request):
         mobile = request.POST.get("mobile",None)
         phone = request.POST.get("phone",None)
         roles = request.POST.getlist("roles",None)
-
+        is_admin = request.POST.get("is_admin",None)
         form_data = {
             'email':email,
             'mobile':mobile,
             'phone':phone,
-            'roles':roles
+            'roles':roles,
+            'is_admin':1 if is_admin == 'on' else 0
         }
         user_obj = UserProfile.objects.get(id=user_id)
         try:
