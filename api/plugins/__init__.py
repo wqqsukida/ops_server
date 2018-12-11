@@ -26,6 +26,7 @@ class PluginManger(object):
             tmp.update(server_dict[self.basic_key]['data'])
             tmp.update(server_dict[self.board_key]['data'])
             tmp.update({'cert_id':cert_id})
+            # print(tmp)
             server_obj = models.Server.objects.create(**tmp)
         else:
             obj = Server(server_obj, server_dict[self.basic_key], server_dict[self.board_key])

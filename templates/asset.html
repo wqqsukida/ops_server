@@ -53,7 +53,7 @@
                 <div class="ibox">
                     <div class="ibox-title">
                         <ol class="breadcrumb">
-                            <h5><a href="/index_v3/">首页</a><B style="color:#ccc">/</B> Asset列表 </h5>
+                            <h5><a href="/index_v3/">首页</a><B style="color:#ccc">/</B> 主机列表 </h5>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -71,13 +71,15 @@
                     <div class="ibox-content">
                         <div class="col-sm-12 m-b-xs" style="padding-bottom: 10px;">
                             <form method="get">
-                                <div class="col-sm-1"> <!--添加-->
-                                    <a class="btn btn-info" href="#" data-toggle="modal" data-target="#AddModal">+ 添加</a>
-                                </div>
 
                                 <div class="col-sm-1">
                                     <a id="shownv"  type="button" class="btn btn-warning">显示更多</a>
                                 </div>
+                                <div class="col-sm-1"> <!--添加-->
+                                    <!--暂不开放添加功能-->
+                                    <!-- class="btn btn-info" href="#" data-toggle="modal" data-target="#AddModal">+ 添加</a>-->
+                                </div>
+
                                 <div class="col-sm-5"></div>
                                 <div class="col-sm-3 ">
                                     <input type="text" name="q" value="{{ search_q }}" class="form-control"  placeholder="请输入关键字进行搜索或导出" />
@@ -192,26 +194,26 @@
                                  <thead>
                                     <tr>
                                         <th></th>
-                                        <th>管理IP</th>
-                                        <th>主机名</th>
+                                        <th>主机IP</th>
+                                        <th>主机别名</th>
                                         <th>操作系统</th>
-                                        <th>主机组</th>
-                                        <th>TAGS</th>
+                                        <th>制造商</th>
+                                        <th>型号</th>
+                                        <th>CPU型号</th>
                                         <th>状态</th>
 
                                         <th data-hide="all">SN</th>
-                                        <th data-hide="all">CPU个数</th>
-                                        <th data-hide="all">IDC</th>
-                                        <th data-hide="all">制造商</th>
-                                        <th data-hide="all">型号</th>
                                         <th data-hide="all">系统版本</th>
-                                        <th data-hide="all">CPU物理个数</th>
-                                        <th data-hide="all">CPU型号</th>
+                                        <th data-hide="all">CPU个数</th>
+                                        <th data-hide="all">物理CPU个数</th>
                                         <th data-hide="all">创建日期</th>
                                         <th data-hide="all">修改日期</th>
+                                        <th data-hide="all">主机组</th>
+                                        <th data-hide="all">IDC</th>
                                         <th data-hide="all">机柜号</th>
                                         <th data-hide="all">客户端版本</th>
-                                        <th>操作(更新/删除)</th>
+                                        <th data-hide="all">TAGS</th>
+                                        <th>操作(更新)</th>
                                     </tr>
                                  </thead>
                                  <tbody>
@@ -225,19 +227,11 @@
                                                     {{ asset.manage_ip }}
                                                 </a>
                                             </td>
-                                            <td>{{ asset.hostname }}</td>
+                                            <td>{{ asset.nickname }}</td>
                                             <td>{{ asset.os_platform }}</td>
-
-                                            <td>
-                                                {% for b in asset.business_unit.values  %}
-                                                    <a class="btn btn-success btn-outline btn-xs">{{ b.name }}</a>
-                                                {% endfor %}
-                                            </td>
-                                            <td>
-                                                {% for t in asset.tags.values %}
-                                                    <a class="btn-sm btn-primary">{{ t.name }}</a>
-                                                {% endfor %}
-                                            </td>
+                                            <td>{{ asset.manufacturer }}</td>
+                                            <td>{{ asset.model }}</td>
+                                            <td>{{ asset.cpu_model }}</td>
                                             <td>
                                                 {% if asset.server_status_id == 1 %}
                                                     <a class="btn-sm btn-success">{{ asset.get_server_status_id_display }}</a>
@@ -250,25 +244,36 @@
                                                 {% endif %}
                                             </td>
 
+
                                             <td>{{ asset.sn }}</td>
-                                            <td>{{ asset.cpu_count }}</td>
-                                            <td>{{ asset.idc.name }}</td>
-                                            <td>{{ asset.manufacturer }}</td>
-                                            <td>{{ asset.model }}</td>
                                             <td>{{ asset.os_version }}</td>
+                                            <td>{{ asset.cpu_count }}</td>
                                             <td>{{ asset.cpu_physical_count }}</td>
-                                            <td>{{ asset.cpu_model }}</td>
-                                            <td>{{ asset.create_at }}</td>
-                                            <td>{{ asset.latest_date }}</td>
+                                            <td>{{ asset.create_at | date:"Y-m-d H:i:s"}}</td>
+                                            <td>{{ asset.latest_date | date:"Y-m-d H:i:s" }}</td>
+                                            <td>
+                                                {% for b in asset.business_unit.values  %}
+                                                    <a class="btn btn-success btn-outline btn-xs">{{ b.name }}</a>
+                                                {% endfor %}
+                                            </td>
+                                            <td>{{ asset.idc.name }}</td>
                                             <td>{{ asset.cabinet_num }}</td>
                                             <td>{{ asset.client_version }}</td>
+                                            <td>
+                                                {% for t in asset.tags.values %}
+                                                    <a class="btn-sm btn-primary">{{ t.name }}</a>
+                                                {% endfor %}
+                                            </td>
                                             <td class="tooltip-demo" style="font-size: 20px">
                                                 <a class="mod-asset-btn" title="更新主机" sid="{{ asset.id }}" data-toggle="modal" data-target="#UpdateModal">
                                                     <i class="fa fa-cog"></i>
                                                 </a>
+                                                <!--暂不开放删除功能-->
+                                                <!--
                                                 <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/asset_del?server_id={{ asset.id }}&page={{ page }}" title="删除主机" class="del_confirm" style="margin-left: 15px">
                                                     <i class="fa fa-trash"></i>
                                                 </a>
+                                                -->
                                                 <!--
                                                 <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_task_status/{{ asset.id }}////" title="任务列表" style="margin-left: 15px">
                                                     <i class="fa fa-cubes"></i>
@@ -381,18 +386,18 @@
                                         </div>
 
                                         <div class="form-group col-sm-12">
-                                            <div class="col-sm-2">  <h5 style="float:right;">主机名<font style="color:red;"> *</font></h5></div>
+                                            <div class="col-sm-2">  <h5 style="float:right;">主机别名<font style="color:red;"> </font></h5></div>
                                             <div class="col-sm-9">
-                                                <input class="form-control" type="text"  name="hostname" id="mod_hostname"
-                                                       placeholder="主机名，比如 www.c1.com,必选">
+                                                <input class="form-control" type="text"  name="nickname" id="mod_nickname"
+                                                       placeholder="主机别名">
                                             </div>
                                         </div>
 
                                         <div class="form-group col-sm-12">
-                                            <div class="col-sm-2">  <h5 style="float:right;">SN<font style="color:red;"> *</font></h5></div>
+                                            <div class="col-sm-2">  <h5 style="float:right;">SN<font style="color:red;"> </font></h5></div>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="text"  name="sn" id="mod_sn"
-                                                       placeholder="SN号,必选">
+                                                       placeholder="SN号">
                                             </div>
                                         </div>
 
@@ -412,7 +417,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="form-group col-sm-12">
+                                        <div class="form-group col-sm-12 hide">
                                             <div class="col-sm-2">  <h5 style="float:right;">管理IP<font style="color:red;"> </font></h5></div>
                                             <div class="col-sm-9">
                                                 <input class="form-control" type="text"  name="manage_ip" id="mod_manage_ip"
@@ -642,7 +647,7 @@
                     if (arg) {
                         console.log(arg);
                         $("#mod_id").val(arg.id);
-                        $("#mod_hostname").val(arg.hostname);
+                        $("#mod_nickname").val(arg.nickname);
                         $("#mod_sn").val(arg.sn);
                         $("#mod_manufacturer").val(arg.manufacturer);
                         $("#mod_model").val(arg.model);

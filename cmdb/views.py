@@ -379,8 +379,8 @@ def asset_update(request):
         result = {}
         page = request.POST.get('page')
         id = request.POST.get("id",None)
-        # 不允许用户更改唯一标识:主机名
-        # hostname = request.POST.get("hostname",None)
+
+        nickname = request.POST.get("nickname",None)
         sn = request.POST.get("sn",None)
         manufacturer = request.POST.get("manufacturer",None)
         model = request.POST.get("model",None)
@@ -393,7 +393,7 @@ def asset_update(request):
         business_unit = request.POST.getlist("business_unit",None)
         idc = request.POST.get("idc",None)
 
-        val_dic = {'data':{'sn':sn,'manufacturer':manufacturer,
+        val_dic = {'data':{'nickname':nickname,'sn':sn,'manufacturer':manufacturer,
                    'model':model,'manage_ip':manage_ip,'os_platform':os_platform,
                    'os_version':os_version,'server_status_id':server_status_id,
                    'tags':tags,'business_unit':business_unit,'idc_id':idc}}

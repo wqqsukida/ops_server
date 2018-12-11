@@ -77,10 +77,10 @@ class APIAuthView(APIView):
             client_md5_str, client_ctime = auth_header_val.split('|', maxsplit=1)
             client_float_ctime = float(client_ctime)
             # print(server_float_ctime - client_float_ctime)
-            if (client_float_ctime + 20) < server_float_ctime :
-                res = {'code': 5, 'msg': 'token已经过期!'}
-                print('[{0}]:{1}'.format(clien_ip, res))
-                return HttpResponse(json.dumps(res))
+            # if (client_float_ctime + 20) < server_float_ctime :
+            #     res = {'code': 5, 'msg': 'token已经过期!'}
+            #     print('[{0}]:{1}'.format(clien_ip, res))
+            #     return HttpResponse(json.dumps(res))
 
             # if client_md5_str in SIGN_RECORD:
             #     res = {'code': 6, 'msg': 'token已被使用!'}

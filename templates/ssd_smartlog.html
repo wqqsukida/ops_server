@@ -208,20 +208,20 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>temperature_sensor_1</td>
-                                    <td>{{ query.last.temperature_sensor_1 }}</td>
+                                    <td>temperature_sensor1</td>
+                                    <td>{{ query.last.temperature_sensor1 }}</td>
                                 </tr>
                                 <tr>
-                                    <td>temperature_sensor_2</td>
-                                    <td>{{ query.last.temperature_sensor_2 }}</td>
+                                    <td>temperature_sensor2</td>
+                                    <td>{{ query.last.temperature_sensor2 }}</td>
                                 </tr>
                                 <tr>
-                                    <td>temperature_sensor_3</td>
-                                    <td>{{ query.last.temperature_sensor_3 }}</td>
+                                    <td>temperature_sensor3</td>
+                                    <td>{{ query.last.temperature_sensor3 }}</td>
                                 </tr>
                                 <tr>
-                                    <td>temperature_sensor_4</td>
-                                    <td>{{ query.last.temperature_sensor_4 }}</td>
+                                    <td>temperature_sensor4</td>
+                                    <td>{{ query.last.temperature_sensor4 }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -497,10 +497,10 @@
                     legend:{
                         data:[
                             "temperature",
-                            "temperature_sensor_1",
-                            "temperature_sensor_2",
-                            "temperature_sensor_3",
-                            "temperature_sensor_4",
+                            "temperature_sensor1",
+                            "temperature_sensor2",
+                            "temperature_sensor3",
+                            "temperature_sensor4",
                         ]},
                     grid:{x:40,x2:40,y2:24},
                     calculable:!0,
@@ -519,11 +519,11 @@
                     }],
                     series:[
                         {
-                            name:"temperature_sensor_1",
+                            name:"temperature_sensor1",
                             type:"line",
                             data:[
                                 {% for item in query %}
-                                    '{{ item.temperature_sensor_1 | cut:' C'  }}',
+                                    '{{ item.temperature_sensor1 | cut:' C'  }}',
                                 {% endfor %}
                             ],
                             markPoint:{
@@ -532,11 +532,11 @@
                                     ]},
                         },
                         {
-                            name:"temperature_sensor_2",
+                            name:"temperature_sensor2",
                             type:"line",
                             data:[
                                 {% for item in query %}
-                                    "{{ item.temperature_sensor_2 | cut:' C' }}",
+                                    "{{ item.temperature_sensor2 | cut:' C' }}",
                                 {% endfor %}
                             ],
                             markPoint:{
@@ -545,11 +545,11 @@
                                     ]},
                                 },
                         {
-                            name:"temperature_sensor_3",
+                            name:"temperature_sensor3",
                             type:"line",
                             data:[
                                 {% for item in query %}
-                                    '{{ item.temperature_sensor_3 | cut:' C'  }}',
+                                    '{{ item.temperature_sensor3 | cut:' C'  }}',
                                 {% endfor %}
                             ],
                             markPoint:{
@@ -558,11 +558,11 @@
                                     ]},
                         },
                         {
-                            name:"temperature_sensor_4",
+                            name:"temperature_sensor4",
                             type:"line",
                             data:[
                                 {% for item in query %}
-                                    '{{ item.temperature_sensor_4 | cut:' C'  }}',
+                                    '{{ item.temperature_sensor4 | cut:' C'  }}',
                                 {% endfor %}
                             ],
                             markPoint:{

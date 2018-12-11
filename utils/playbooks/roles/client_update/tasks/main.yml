@@ -1,14 +1,20 @@
 - name: copy ops_client.tar.gz to remote host
   copy: src=ops_client.tar.gz dest=/usr/local/src/ops_client.tar.gz
   tags: cppkg
+# 保留客户端原cert_id(客户端升级用,同时playbook下的cert.txt填写{{ cert_id }})
+#- name: create cert_id
+#  shell: cat /usr/local/src/ops_client/conf/cert.txt
+#  register: cert
+#- set_fact: cert_id="{{cert.stdout}}"
 
-- name: create cert_id
-  shell: cat /usr/local/src/ops_client/conf/cert.txt
-  register: cert
-- set_fact: cert_id="{{cert.stdout}}"
+- name: sync date
+  shell: date -s {{ server_date }}
+
+- name: set sudoers
+  shell: sed -i 's/Defaults    requiretty/Defaults    !requiretty/g' /etc/sudoers
 
 - name: tar ops_client.tar.gz
-  shell: cd /usr/local/src;tar -xf ops_client.tar.gz
+  shell: cd /usr/local/src;sudo tar -xf ops_client.tar.gz
 
 - name: copy cert.txt
   template: src=cert.txt dest=/usr/local/src/ops_client/conf/cert.txt
@@ -18,3 +24,7 @@
 
 - name: restart client
   shell: sh /opt/run_client.sh stop;sh /opt/run_client.sh start
+
+# 设置开机启动(第一次安装用)
+- name: set reboot
+  shell: sed -i '$a\sh /opt/run_client.sh start' /etc/rc.d/rc.local;chmod +x /etc/rc.d/rc.local

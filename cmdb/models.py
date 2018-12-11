@@ -71,6 +71,7 @@ class Server(models.Model):
     server_status_id = models.IntegerField(choices=server_status_choices, default=1)
 
     hostname = models.CharField(max_length=128,null=True,blank=True)
+    nickname = models.CharField('主机别名',max_length=128,null=True,blank=True)
     sn = models.CharField('SN号', max_length=128, db_index=True)
     manufacturer = models.CharField(verbose_name='制造商', max_length=64, null=True, blank=True)
     model = models.CharField('型号', max_length=64, null=True, blank=True)
@@ -158,10 +159,10 @@ class Smart_log(models.Model):
     warning_temperature_time = models.CharField(max_length=128, null=True)
     critical_composite_temperature_time = models.CharField(max_length=128, null=True)
 
-    temperature_sensor_1 = models.CharField(max_length=128, null=True)
-    temperature_sensor_2 = models.CharField(max_length=128, null=True)
-    temperature_sensor_3 = models.CharField(max_length=128, null=True)
-    temperature_sensor_4 = models.CharField(max_length=128, null=True)
+    temperature_sensor1 = models.CharField(max_length=128, null=True)
+    temperature_sensor2 = models.CharField(max_length=128, null=True)
+    temperature_sensor3 = models.CharField(max_length=128, null=True)
+    temperature_sensor4 = models.CharField(max_length=128, null=True)
 
     thermal_management_t1_trans_count = models.CharField(max_length=128, null=True)
     thermal_management_t2_trans_count = models.CharField(max_length=128, null=True)
