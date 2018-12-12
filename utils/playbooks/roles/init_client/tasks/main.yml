@@ -1,0 +1,8 @@
+- name: install wget
+  shell: yum -y install iproute wget;
+- name: wget repo
+  shell: wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo;wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+- name: install pip
+  shell: yum -y install python2-pip
+- name: install python pkg
+  shell: pip install requests==2.19.1

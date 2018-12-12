@@ -170,7 +170,7 @@ def del_focus(request):
         for s in server_objs:
             user_obj.servers.remove(s)
 
-        return HttpResponseRedirect('/index_v3/')
+    return HttpResponseRedirect('/index_v3/')
 
 def add_comment(request):
     if request.method == "POST":

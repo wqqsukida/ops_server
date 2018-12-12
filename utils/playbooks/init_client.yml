@@ -1,0 +1,5 @@
+---
+# init_client.yml
+- hosts: all
+  roles:
+  - init_client

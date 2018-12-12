@@ -34,7 +34,7 @@ pip3 install --upgrade pip
 ```
 ##### create database
 ```sql
-MariaDB [(none)]> create database ops_server;
+MariaDB [(none)]> create database ops_server character set utf8;
 Query OK, 1 row affected (0.00 sec)
 
 MariaDB [(none)]> show databases;

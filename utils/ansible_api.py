@@ -66,7 +66,7 @@ class Runner(object):
 
         self.variable_manager = VariableManager(loader=self.loader, inventory=self.inventory)
         # 扩展加入变量用户名,密码
-        self.variable_manager.extra_vars = {"ansible_user": "root", "ansible_ssh_pass": "test",
+        self.variable_manager.extra_vars = {"ansible_user": "root", "ansible_ssh_pass": "Password1",
                                             "server_date":'"%s"'%datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         self.passwords = None
         self.results_raw = {}
@@ -190,7 +190,7 @@ class Runner(object):
 
 if __name__ == "__main__":
     c = Runner(
-               '10.0.2.68,'
+               '10.0.25.52,10.0.25.53,10.0.25.51,10.0.25.55'
 )   # ['/etc/ansible/hosts'] or '172.17.0.2,172.17.0.3'
     # c.run_ad_hoc()
     c.run_playbook()
