@@ -1,9 +1,9 @@
 - name: copy ops_client.tar.gz to remote host
-  copy: src=ops_client.tar.gz dest=/usr/local/src/ops_client.tar.gz
+  copy: src=ops_client.tar.gz dest=/opt/ops_client.tar.gz
   tags: cppkg
 # 保留客户端原cert_id(客户端升级用,同时playbook下的cert.txt填写{{ cert_id }})
 #- name: create cert_id
-#  shell: cat /usr/local/src/ops_client/conf/cert.txt
+#  shell: cat /opt/ops_client/conf/cert.txt
 #  register: cert
 #- set_fact: cert_id="{{cert.stdout}}"
 
@@ -14,13 +14,13 @@
   shell: sed -i 's/Defaults    requiretty/Defaults    !requiretty/g' /etc/sudoers
 
 - name: tar ops_client.tar.gz
-  shell: cd /usr/local/src;sudo tar -xf ops_client.tar.gz
+  shell: cd /opt;sudo tar -xf ops_client.tar.gz
 
 - name: copy cert.txt
-  template: src=cert.txt dest=/usr/local/src/ops_client/conf/cert.txt
+  template: src=cert.txt dest=/opt/ops_client/conf/cert.txt
 
 - name: copy run_client.sh
-  copy: src=/opt/run_client.sh dest=/opt/run_client.sh
+  copy: src=run_client.sh dest=/opt/run_client.sh
 
 - name: restart client
   shell: sh /opt/run_client.sh stop;sh /opt/run_client.sh start
