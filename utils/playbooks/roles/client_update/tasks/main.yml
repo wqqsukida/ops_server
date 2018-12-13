@@ -2,10 +2,10 @@
   copy: src=ops_client.tar.gz dest=/opt/ops_client.tar.gz
   tags: cppkg
 # 保留客户端原cert_id(客户端升级用,同时playbook下的cert.txt填写{{ cert_id }})
-#- name: create cert_id
-#  shell: cat /opt/ops_client/conf/cert.txt
-#  register: cert
-#- set_fact: cert_id="{{cert.stdout}}"
+- name: create cert_id
+  shell: cat /opt/ops_client/conf/cert.txt
+  register: cert
+- set_fact: cert_id="{{cert.stdout}}"
 
 - name: sync date
   shell: date -s {{ server_date }}
@@ -20,11 +20,11 @@
   template: src=cert.txt dest=/opt/ops_client/conf/cert.txt
 
 - name: copy run_client.sh
-  copy: src=run_client.sh dest=/opt/run_client.sh
+  copy: src=run_client.sh dest=/opt/ops_client/run_client.sh
 
 - name: restart client
-  shell: sh /opt/run_client.sh stop;sh /opt/run_client.sh start
+  shell: sh /opt/ops_client/run_client.sh stop;sh /opt/ops_client/run_client.sh start
 
 # 设置开机启动(第一次安装用)
-- name: set reboot
-  shell: sed -i '$a\sh /opt/run_client.sh start' /etc/rc.d/rc.local;chmod +x /etc/rc.d/rc.local
+#- name: set reboot
+#  shell: sed -i '$a\sh /opt/ops_client/run_client.sh start' /etc/rc.d/rc.local;chmod +x /etc/rc.d/rc.local
