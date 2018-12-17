@@ -165,6 +165,7 @@ http {
 
 ##### run server
 ```bash
+[root@localhost ops_server]# python3 manage.py crontab add
 [root@localhost ops_server]# gunicorn -w 6 -k gevent -b 0.0.0.0:8000 ops_server.wsgi:application
 ```
 

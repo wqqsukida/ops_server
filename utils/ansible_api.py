@@ -189,8 +189,8 @@ class Runner(object):
         return json.dumps(self.result_raw,indent=4)
 
 if __name__ == "__main__":
-    c = Runner(
-               '10.0.25.52,10.0.25.53,10.0.25.51,10.0.25.55'
+    c = Runner('10.0.4.193,'
+               #'10.0.25.52,10.0.25.53,10.0.25.51,10.0.25.55'
 )   # ['/etc/ansible/hosts'] or '172.17.0.2,172.17.0.3'
     # c.run_ad_hoc()
     c.run_playbook()
