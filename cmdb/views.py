@@ -431,6 +431,56 @@ def asset_change_log(request):
                 res.append(res_dic)
 
         return HttpResponse(json.dumps(res))
+
+def tag_add(request):
+    if request.method == "POST":
+        page = request.POST.get('page')
+        name = request.POST.get('name',None)
+        if name:
+            try:
+                Tag.objects.create(name=name)
+                result = {"code": 0, "message": "创建标签成功！"}
+            except Exception as e:
+                result = {"code": 1, "message":e }
+        else:
+            result = {"code": 1, "message": "标签名不能为空！"}
+        return HttpResponseRedirect('/cmdb/asset_list?status={0}&message={1}&page={2}'.
+                            format(result.get("code", ""),
+                                   result.get("message", ""),
+                                   page))
+
+def tag_del(request):
+    if request.method == "GET":
+        id = request.GET.get("tid",None)
+        page = request.GET.get("page")
+        try:
+            Tag.objects.get(id=id).delete()
+            result = {"code": 0, "message": "删除标签成功！"}
+        except Exception as e:
+            result = {"code": 1, "message":e }
+
+        return HttpResponseRedirect('/cmdb/asset_list?status={0}&message={1}&page={2}'.
+                            format(result.get("code", ""),
+                                   result.get("message", ""),
+                                   page))
+
+def tag_edit(request):
+    if request.method == "POST":
+        page = request.POST.get('page')
+        id = request.POST.get("id",None)
+        name = request.POST.get("name",None)
+        try:
+            tag_obj = Tag.objects.filter(id=id)
+            tag_obj.update(name=name)
+            result = {"code": 0, "message": "修改标签成功！"}
+        except Exception as e:
+            result = {"code": 1, "message": str(e)}
+
+        return HttpResponseRedirect('/cmdb/asset_list?status={0}&message={1}&page={2}'.
+                            format(result.get("code", ""),
+                                   result.get("message", ""),
+                                   page))
+
 #========================================================================#
 def ssd_list(request):
     if request.method == "GET":
