@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:01 GMT -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>H+ 后台主题UI框架 - 数据表格</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link rel="shortcut icon" href="../static/favicon.ico">
+    <link href="/static/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+{#    <link href="/static/css/plugins/footable/footable.core.css" rel="stylesheet">#}
+    <link href="/static/css/font-awesome.min93e3.css" rel="stylesheet">
+    <link href="/static/css/animate.min.css" rel="stylesheet">
+    <link href="/static/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/css/gstyle.css" rel="stylesheet">
+
+    <link href="/static/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+    <!--通知消息处-->
+    {% if result  %}
+        {% if result.code == 0 %}
+            <div class="alert alert-success" style="text-align: center">执行成功:<strong>{{ result.message }}</strong></div>
+        {% else %}
+            <div class="alert alert-danger" style="text-align: center">执行失败:<strong>{{ result.message }}</strong></div>
+        {% endif %}
+    {% endif %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <h5><a href="/index_v3/">首页</a><B style="color:#ccc">/</B> 版本信息 </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a onclick="window.location.reload()">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </ol>
+                    </div>
+
+                    <div class="ibox-content">
+                        <div id="toolbar">
+                            <a data-toggle="modal" data-target="#AddVerMod" class="btn  btn-info">+ 添加版本</a>
+                            <a data-toggle="modal" data-target="#AddDevMod" class="btn  btn-info">+ 添加产品</a>
+                            <a data-toggle="modal" data-target="#AddImgMod" class="btn  btn-info">+ 添加Image</a>
+                        </div>
+                        <table class="table" id="report"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="AddVerMod" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">添加版本</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/cmdb/"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">版本号：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="version_name" id=""
+                                       placeholder="">
+                            </div>
+                        </div>
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="AddDevMod" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">添加产品</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/cmdb/"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">所属版本：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="version_name" id="">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">产品名称：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="device_name" id=""
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="AddImgMod" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">添加Image</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/cmdb/"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">所属产品：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="device_name" id="">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Image类型：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="image_type" id="">
+
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">下载路径：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="download_url" id=""
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="EditVerModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">更新版本信息</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/cmdb/"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="id" id="mod_vid">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">版本名称：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="version_name" id="mod_vname"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+
+    <div class="modal inmodal" id="EditDevModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">更新产品信息</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/cmdb/"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="id" id="mod_did">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">产品名称：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="device_name" id="mod_dname"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="EditImageModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">更新image信息</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/cmdb/"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="id" id="mod_id">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Image类型：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="image_type" id="mod_type">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">下载路径：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="download_url" id="mod_url"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- 全局js -->
+    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script src="/static/js/plugins/jeditable/jquery.jeditable.js"></script>
+    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+{#    <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>#}
+    <script src="/static/js/plugins/layer/layer.min.js"></script>
+    <!-- jQuery Validation plugin javascript-->
+    <script src="/static/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="/static/js/plugins/validate/messages_zh.min.js"></script>
+{#    <script src="/static/js/plugins/footable/footable.all.min.js"></script>#}
+    <!-- 自定义js -->
+    <script src="/static/js/content.min.js?v=1.0.0"></script>
+    <!-- bootstrap-table.min.js -->
+    <script src="/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/static/js/plugins/bootstrap-table/bootstrap-table-zh-CN.js"></script>
+    <script src="/static/js/plugins/loading/loading.js"></script>
+
+
+    <script>
+     window.onload = myfun;
+     function myfun() {
+         $("#report").bootstrapTable({
+             url: '/firmware/version_info',
+             method: 'post',
+             detailView: true,//父子表
+             //sidePagination: "server",
+             toolbar:'#toolbar',
+             pagination: true,
+             pageSize: 10,
+             pageList: [10, 25],
+             columns: [
+                 //{checkbox:true},
+                 {
+                 field: 'id',
+                 title: 'ID',
+                 sortable: true,
+                 width:'5%',
+             },
+                 {
+                 field: 'name',
+                 title: '版本名称',
+                 class:'get-vname',
+                 sortable: true
+             },
+             {
+                 field: 'id',
+                 title:'操作',
+                 formatter: function(value, row, index){
+                    var a = '<a class="mod-ver-btn" vid='+row.id+' data-toggle="modal" data-target="#EditVerModal" style="font-size: 20px"><i class="fa fa-cog"></i></a>'  ;
+                    var b = '<a class="" href="#" style="font-size: 20px;margin-left:15px"><i class="fa fa-trash"></i></a>';
+                    return a + b
+                 }
+
+                 }
+             ],
+             //注册加载子表的事件。注意下这里的三个参数！
+             onExpandRow: function (index, row, $detail) {
+
+                 InitSubTable(index, row, $detail);
+             }
+         });
+     }
+
+     InitSubTable = function (index, row, $detail) {
+        var cur_table = $detail.html('<table></table>').find('table');
+        $(cur_table).bootstrapTable({
+            url:'/firmware/get_device',
+            methods:'get',
+            detailView: true,//父子表
+            queryParams:{id:row.id},
+            columns:[
+                 {checkbox:true},
+                 {
+                     field: 'id',
+                     title: 'ID',
+                     sortable: true,
+                     width:'5%',
+                     cellStyle:function (value,row,index) {
+                        return {css:{"background-color":"lightsteelblue"}}
+                     }
+                 },
+                 {
+                     field: 'name',
+                     title: '设备名称',
+                     sortable: true,
+                     class:'get-dname',
+                     cellStyle:function (value,row,index) {
+                        return {css:{"background-color":"lightsteelblue"}}
+                     }
+                 },
+                 {
+                     field: 'id',
+                     title:'操作',
+                     formatter: function(value, row, index){
+                        var a = '<a class="mod-dev-btn" did='+row.id+' data-toggle="modal" data-target="#EditDevModal" style="font-size: 20px">' +
+                            '<i class="fa fa-cog"></i></a>'  ;
+                        var b = '<a class="" href="#" style="font-size: 20px;margin-left:15px">' +
+                            '<i class="fa fa-trash"></i></a>';
+                        return a + b
+                     },
+                     cellStyle:function (value,row,index) {
+                        return {css:{"background-color":"lightsteelblue"}}
+                     }
+                 }
+
+             ],
+            onExpandRow: function (index, row, $detail) {
+                InitSecSubTable(index, row, $detail);
+                }
+        })
+     };
+
+    InitSecSubTable = function (index, row, $detail) {
+        var sec_table = $detail.html('<table></table>').find('table');
+        $(sec_table).bootstrapTable({
+            url:'/firmware/get_image',
+            methods:'get',
+            queryParams:{id:row.id},
+            columns:[
+                 //{checkbox:true},
+                 {
+                     field: 'id',
+                     title: 'ID',
+                     sortable: true,
+                     width:'5%',
+                     cellStyle:function(value,row,index){
+                        return {css:{"background-color":"lightblue"}}
+                        }
+                 },
+                 {
+                     field: 'image_type',
+                     title: 'image类型',
+                     sortable: true,
+                     cellStyle:function(value,row,index){
+                        return {css:{"background-color":"lightblue"}}
+                        }
+                 },
+
+                 {
+                     field: 'download_url',
+                     title: '下载地址',
+                     sortable: true,
+                     class:'get-url',
+                     cellStyle:function(value,row,index){
+                        return {css:{"background-color":"lightblue"}}
+                        }
+                 },
+                {
+                    field:'enabled',
+                    title:'Image状态',
+                    cellStyle:function(value,row,index){
+                        return {css:{"background-color":"lightblue"}}
+                        },
+                    formatter:function (value,row,index) {
+                        if(row.enabled === 1){
+                            //href="/firmware/image_enabled?imid='+row.id+'&enabled=0"
+                            return '<a title="点击禁用" class="image-enabled-btn" imid='+row.id+' enabled=0  style="font-size: 20px;color: greenyellow">' +
+                                '<i class="fa fa-check-circle-o"></i></a>'
+                        }else{
+                            //href="/firmware/image_enabled?imid='+row.id+'&enabled=1"
+                            return '<a title="点击启用" class="image-enabled-btn" imid='+row.id+' enabled=1  style="font-size: 20px;color: red">' +
+                                '<i class="fa fa-ban"></i></a>'
+                        }
+
+                    }
+                },
+                 {
+                     field: 'id',
+                     title:'操作',
+                     formatter: function(value, row, index){
+                        var a = '<a class="mod-image-btn" imid='+row.id+' data-toggle="modal" data-target="#EditImageModal" style="font-size: 20px">' +
+                            '<i class="fa fa-cog"></i></a>'  ;
+                        var b = '<a class="" href="#" style="font-size: 20px;margin-left:15px">' +
+                            '<i class="fa fa-trash"></i></a>';
+                        return a + b
+                     },
+                     cellStyle:function(value,row,index){
+                        return {css:{"background-color":"lightblue"}}
+                        }
+                 }
+
+             ],
+
+        })
+     }
+
+    </script>
+
+
+    <script>
+        $("table").on("click",".mod-ver-btn",function () {
+           version_id = $(this).attr('vid');
+           version_name = $(this).parent().siblings('.get-vname').text().trim();
+           //console.log(version_name);
+           $("#mod_vname").val(version_name);
+           $("#mod_vid").val(version_id);
+        });
+
+        $("table").on("click",".mod-dev-btn",function () {
+           device_id = $(this).attr('did');
+           device_name = $(this).parent().siblings('.get-dname').text().trim();
+           //console.log(device_name);
+           $("#mod_dname").val(device_name);
+           $("#mod_did").val(device_id);
+        });
+
+        $("table").on("click",".mod-image-btn",function () {
+           image_id = $(this).attr('imid');
+           download_url = $(this).parent().siblings('.get-url').text().trim();
+           //console.log(download_url);
+           $("#mod_url").val(download_url);
+           $("#mod_id").val(image_id);
+        });
+
+
+        $("table").on("click",".image-enabled-btn",function () {
+            tag_a = $(this);
+            image_id = tag_a.attr('imid');
+            var enabled = tag_a.attr('enabled');
+            $.bootstrapLoading.start({ loadingTips: "正在修改状态，请稍候..." });
+            $.ajax({
+                url:"/firmware/image_enabled",
+                type:"POST",
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                data:{image_id:image_id,enabled:enabled},
+                dataType:'JSON',
+                success:function () {
+                    if(enabled === '0'){
+                        tag_a.attr('enabled',1);
+                        tag_a.children('i').attr('class','fa fa-ban');
+                        tag_a.css('color','red');
+                        tag_a.attr('title','点击启用')
+                    }
+                    else if(enabled === '1'){
+                        tag_a.attr('enabled',0);
+                        tag_a.children('i').attr('class','fa fa-check-circle-o');
+                        tag_a.css('color','greenyellow');
+                        tag_a.attr('title','点击禁用')
+                    }
+
+                },
+                complete:function () {$.bootstrapLoading.end();}
+            })
+        })
+    </script>
+
+
+
+</body>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:02 GMT -->
+</html>

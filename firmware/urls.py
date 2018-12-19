@@ -1,4 +1,4 @@
-"""ops_server URL Configuration
+"""auto_server URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -13,21 +13,13 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url,include
+from django.conf.urls import url
 from django.contrib import admin
-from cmdb import views
-
+from . import views
 urlpatterns = [
-    # url(r'^admin/', admin.site.urls),
-    url(r'^api/', include("api.urls")),
-    url(r'^cmdb/', include("cmdb.urls")),
-    url(r'^rbac/', include("rbac.urls")),
-    url(r'^firmware/', include("firmware.urls")),
-    url(r'^login/', views.login),
-    url(r'^logout/', views.logout),
-    url(r'^index/', views.index),
-    url(r'^index_v3/', views.index_v3),
-    url(r'^403/', views.forbidden),
-    url(r'^$', views.index),
+    url(r'^version_info', views.version_info),
+    url(r'^get_device', views.get_device),
+    url(r'^get_image', views.get_image),
+    url(r'^image_enabled', views.image_enabled),
 
 ]
