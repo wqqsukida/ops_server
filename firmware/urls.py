@@ -18,8 +18,18 @@ from django.contrib import admin
 from . import views
 urlpatterns = [
     url(r'^version_info', views.version_info),
-    url(r'^get_device', views.get_device),
-    url(r'^get_image', views.get_image),
-    url(r'^image_enabled', views.image_enabled),
+    url(r'^version_add', views.version_add),
+    url(r'^version_edit', views.version_edit),
+    url(r'^version_del', views.version_del),
+    url(r'^dev_list', views.dev_list),
+    url(r'^dev_add', views.dev_add),
+    url(r'^dev_del', views.dev_del),
+    url(r'^dev_edit', views.dev_edit),
+    url(r'^img_list', views.img_list),
+    url(r'^img_add', views.img_add),
+    url(r'^img_del', views.img_del),
+    url(r'^img_edit', views.img_edit),
+    url(r'^img_enabled', views.img_enabled),
+    url(r'^image_download', views.image_download),
 
 ]

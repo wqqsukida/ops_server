@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'cmdb.apps.CmdbConfig',
     'rbac.apps.RbacConfig',
+    'firmware.apps.FirmwareConfig',
     'rest_framework',
     'django_crontab',
 ]
@@ -148,6 +149,7 @@ VALID_URL= [
     '^/api/stask/',
     '^/api/file/',
     '^/api/test/',
+    '^/firmware/image_download/',
     # '^/cmdb/asset_list/',
 ]
 

@@ -3,27 +3,29 @@ from django.db import models
 # Create your models here.
 class FirmWareVerison(models.Model):
     """
-
+    版本表
     """
-    version_number = models.CharField('版本号', max_length=32)
-    # is_admin = models.BooleanField(default=False)
-    # ssd_obj = models.ForeignKey(to="cmdb.Nvme_ssd",related_name="")
+    version_name = models.CharField('版本号', max_length=32,unique=True)
+
     class Meta:
-        verbose_name_plural = "固件版本表"
+        verbose_name_plural = "版本表"
 
     def __str__(self):
-        return self.version_number
+        return self.version_name
 
 class Device(models.Model):
     """
-
+    产品类型
     """
-    name = models.CharField('产品名称',max_length=32)
-    firmware = models.ForeignKey('对应固件版本', to='FirmWareVerison')
+    device_name = models.CharField('产品类型名称',max_length=32)
+    version = models.ForeignKey(to='FirmWareVerison')
+
+    class Meta:
+        unique_together = ('device_name', 'version',)
 
 class Image(models.Model):
     """
-
+    image表
     """
     image_type_choices = (
         (1, 'boot'),
@@ -38,7 +40,10 @@ class Image(models.Model):
     image_type = models.IntegerField(choices=image_type_choices, default=1)
     download_url = models.CharField('下载地址',max_length=256,null=True,blank=True)
     file_path = models.CharField('存放路径',max_length=256,null=True,blank=True)
-    device = models.ForeignKey('对应产品',to='Device')
+    device = models.ForeignKey(to='Device')
     is_url = models.BooleanField(default=True)
     enabled = models.BooleanField(default=False)
     md5 = models.CharField(max_length=64,null=True,blank=True)
+
+    class Meta:
+        unique_together = ('image_type', 'device',)
