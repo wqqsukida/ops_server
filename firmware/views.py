@@ -157,8 +157,8 @@ def img_add(request):
         download_url = request.POST.get("download_url",None)
         image_file_obj = request.FILES.get("image_file")
 
-        version_obj = FirmWareVerison.objects.get(id=version_id)
-        device_obj = Device.objects.get(id=device_id)
+        version_obj = FirmWareVerison.objects.filter(id=version_id).first()
+        device_obj = Device.objects.filter(id=device_id).first()
 
         try:
             if image_file_obj:
@@ -201,7 +201,8 @@ def img_del(request):
         id = request.GET.get("imid",None)
         try:
             img_obj = Image.objects.get(id=id)
-            os.remove(img_obj.file_path)
+            if img_obj.file_path:
+                os.remove(img_obj.file_path) #删除对应本地image
             img_obj.delete()
             result = {"code": 0, "message": "删除固件类型成功！"}
         except Exception as e:
@@ -219,9 +220,41 @@ def img_edit(request):
         image_file_obj = request.FILES.get("image_file")
         try:
             img_obj = Image.objects.filter(id=id)
-            img_obj.update(download_url=download_url)
-            result = {"code": 0, "message": "更新固件信息成功！"}
+            if image_file_obj:
+                # 1.删除原文件
+                old_file = img_obj.first().file_path
+                if old_file and os.path.exists(old_file):
+                    os.remove(old_file)
+                # 2.拼接新文件路径
+                new_file_path = os.path.join(settings.BASE_DIR, 'firmware_image',
+                                         img_obj.first().device.version.version_name,
+                                         img_obj.first().device.device_name,
+                                         str(img_obj.first().image_type),
+                                         )
+                if not os.path.exists(new_file_path):
+                    os.makedirs(new_file_path)
+                image_file = os.path.join(new_file_path, image_file_obj.name)
+                # 3.创建新文件
+                f = open(image_file, 'wb')
+                for c in image_file_obj.chunks():
+                    f.write(c)
+                f.close()
+                # 4.获取文件md5
+                file_md5 = match(image_file)
+                # 5.重命名
+                new_image_file = os.path.join(new_file_path,'%s_%s'%(image_file_obj.name,file_md5))
+                os.rename(image_file,new_image_file)
+                # 6.更新数据库
+                download_url = 'http://10.0.2.20/firmware/image_download/?fid={0}'.format(file_md5)
+                img_obj.update(download_url=download_url,file_path=new_image_file,is_url=False,
+                               md5=file_md5)
+                result = {"code": 0, "message": "替换image成功！"}
+            else:
+
+                img_obj.update(download_url=download_url)
+                result = {"code": 0, "message": "更新固件url成功！"}
         except Exception as e:
+            print(traceback.format_exc())
             result = {"code": 1, "message": str(e)}
 
         return HttpResponseRedirect('/firmware/version_info?status={0}&message={1}'.
@@ -255,5 +288,5 @@ def image_download(request):
             rep['Content-Disposition'] = 'attachment;filename=%s'%file_name
             return rep
         except Exception as e:
-            print(str(e))
+            print(traceback.format_exc())
             return HttpResponse('DownLoad Error!(%s)'%str(e))
