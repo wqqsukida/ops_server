@@ -162,6 +162,7 @@ def img_add(request):
 
         try:
             if image_file_obj:
+                # 1.拼接新文件路径
                 file_path = os.path.join(settings.BASE_DIR, 'firmware_image',
                                          version_obj.version_name,
                                          device_obj.device_name,
@@ -170,17 +171,17 @@ def img_add(request):
                 if not os.path.exists(file_path):
                     os.makedirs(file_path)
                 image_file = os.path.join(file_path, image_file_obj.name)
+                # 2.创建新文件
                 f = open(image_file, 'wb')
                 for c in image_file_obj.chunks():
                     f.write(c)
                 f.close()
-
-                file_md5 = match(image_file) #获取文件md5
+                # 3.获取文件md5并重命名
+                file_md5 = match(image_file)
                 new_image_file = os.path.join(file_path,'%s_%s'%(image_file_obj.name,file_md5))
                 os.rename(image_file,new_image_file) #重命名文件
-
+                # 4.数据库添加
                 download_url = 'http://10.0.2.20/firmware/image_download/?fid={0}'.format(file_md5)
-
                 Image.objects.create(device=device_obj,image_type=image_type,download_url=download_url,
                                      md5=file_md5,file_path=new_image_file,is_url=False)
             else:
@@ -239,12 +240,11 @@ def img_edit(request):
                 for c in image_file_obj.chunks():
                     f.write(c)
                 f.close()
-                # 4.获取文件md5
+                # 4.获取文件md5并重命名
                 file_md5 = match(image_file)
-                # 5.重命名
                 new_image_file = os.path.join(new_file_path,'%s_%s'%(image_file_obj.name,file_md5))
                 os.rename(image_file,new_image_file)
-                # 6.更新数据库
+                # 5.更新数据库
                 download_url = 'http://10.0.2.20/firmware/image_download/?fid={0}'.format(file_md5)
                 img_obj.update(download_url=download_url,file_path=new_image_file,is_url=False,
                                md5=file_md5)

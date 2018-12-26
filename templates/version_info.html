@@ -508,7 +508,10 @@
                      class:'get-url',
                      cellStyle:function(value,row,index){
                         return {css:{"background-color":""}}
-                        }
+                        },
+                     formatter:function (value,row,index) {
+                         return '<a href="'+value+'">'+value+'</a>'
+                     }
                  },
                 {
                     field:'enabled',
