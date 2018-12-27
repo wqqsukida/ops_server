@@ -39,7 +39,7 @@ class LoginForm(Form):
         widget=widgets.TextInput(attrs={'class':'form-control uname',
                                         'type':'text',
                                         'id':'inputUsername3',
-                                        'placeholder':'Username',
+                                        'placeholder':'用户名',
                                         'name':'username'
                                         })
     )
@@ -48,9 +48,21 @@ class LoginForm(Form):
         error_messages={'required': '*密码不能为空'},
         widget = widgets.PasswordInput(attrs={'class':'form-control pword m-b',
                                         'id':'inputPassword3',
-                                        'placeholder':'Password',
+                                        'placeholder':'密码',
                                         'name':'password'
                                         })
+    )
+
+    code = fields.CharField(
+        required=True,
+        error_messages={'required': '*验证码不能为空'},
+        widget = widgets.PasswordInput(attrs={'class':'form-control',
+                                        'id':'inputCode',
+                                        'placeholder':'验证码',
+                                        'name':'code',
+                                        'style':'width:55%;display:inline-block'
+                                        }),
+
     )
 #========================================================================#
 def login(request):
@@ -66,22 +78,30 @@ def login(request):
         if form.is_valid():
             user = request.POST.get('username',None)  #获取input标签里的username的值 None：获取不到不会报错
             pwd = request.POST.get('password',None)
-            pwd = encrypt(pwd) #md5加密密码字符串
-            user_obj = AdminInfo.objects.filter(username=user, password=pwd).first()
+            code = request.POST.get('code',None)
+            # print(code,request.session['keep_valid_code'])
 
-            if user_obj:
-                role = user_obj.user.roles.values('title')
-                # print(role)
-                if role:
-                    role = role.first().get('title')
+            if  code.lower() == request.session['keep_valid_code'].lower(): #比对验证码
+
+                pwd = encrypt(pwd) #md5加密密码字符串
+                user_obj = AdminInfo.objects.filter(username=user, password=pwd).first()
+
+                if user_obj:
+                    role = user_obj.user.roles.values('title')
+                    # print(role)
+                    if role:
+                        role = role.first().get('title')
+                    else:
+                        role = '访客'
+                    request.session['is_login'] = {'user': user_obj.user.name, 'role': role}  # 仅作为登录后用户名和身份显示session
+                    init_permission(user_obj, request)
+                    response['data'] = {}
                 else:
-                    role = '访客'
-                request.session['is_login'] = {'user': user_obj.user.name, 'role': role}  # 仅作为登录后用户名和身份显示session
-                init_permission(user_obj, request)
-                response['data'] = {}
+                    response['status'] = False
+                    response['msg'] = {'password': ['*用户名或者密码错误']}
             else:
                 response['status'] = False
-                response['msg'] = {'password': ['*用户名或者密码错误']}
+                response['msg'] = {'code': ['*请填写正确的验证码']}
         else:
             response['status'] = False
             response['msg'] = form.errors

@@ -140,6 +140,7 @@ PERMISSION_URL_DICT_KEY = "lgdjfsjsgvsctewtg"
 # 不用登陆可访问页面
 VALID_URL= [
     '^/login/',
+    '^/get_code/',
     # '^/index/',
     # '^/index_v3/',
     '^/403/',

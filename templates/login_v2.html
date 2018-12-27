@@ -36,9 +36,16 @@
                     <h3 class="no-margins">登录：</h3>
                     {{ form.username }}
                     {{ form.password }}
+                    {{ form.code }}
 {#                    <input type="text" class="form-control uname" placeholder="用户名" />#}
 {#                    <input type="password" class="form-control pword m-b" placeholder="密码" />#}
-                    <a href="">忘记密码了？</a>
+
+{#                    <input class="form-control" type="text" placeholder="验证码" style="display: inline-block;width: 50%">#}
+                    <!--验证码-->
+                    <img style="cursor: pointer" onclick="Code()" id="img" src="/get_code/" width="100px" height="36px" >
+
+
+                    <a style="cursor: pointer" id="forget-password" >忘记密码了？</a>
                     <a id="login_btn" class="btn btn-success btn-block">登录</a>
                 </form>
             </div>
@@ -65,17 +72,22 @@
                 if(arg.status){
                     location.href = "/index/"
                 }else{
-                    console.log(arg.msg);
+                    //console.log(arg.msg);
                     $.each(arg.msg,function (k,v) {
                         var tag = document.createElement('span');
                         tag.innerHTML = v[0];
                         tag.className = "error";
-                        tag.style = "color:red;font-weight:800;left:20px";
-                        console.log(tag.innerHTML);
+                        tag.style = "color:red;font-weight:800;left:20px;display:block";
+                        //console.log(tag.innerHTML);
                         // <span class='error'>v[0]</span>
                         //$('#login_btn').before(tag);
-                        $('.form-horizontal input[name="'+k+'"]').after(tag);
-                    })
+                        if(k === 'code'){
+                            console.log(k);
+                            $('#img').after(tag)
+                        }else{
+                        $('.form-horizontal input[name="'+k+'"]').after(tag);}
+                    });
+                    Code()
                 }
             }
         })
@@ -91,7 +103,19 @@
             }
 
         }
+    });
+
+    //点击刷新验证码
+    function Code() {
+        $("#img").attr('src','/get_code/'+Math.random())
+    }
+
+    $("#forget-password").click(function () {
+        alert('请联系管理员!')
     })
+    //function Code() {
+    //    document.getElementById("img").src="/get_code/"+Math.random();
+    //}
 
 </script>
 </html>
