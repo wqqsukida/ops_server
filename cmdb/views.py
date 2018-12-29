@@ -56,7 +56,7 @@ class LoginForm(Form):
     code = fields.CharField(
         required=True,
         error_messages={'required': '*验证码不能为空'},
-        widget = widgets.PasswordInput(attrs={'class':'form-control',
+        widget = widgets.TextInput(attrs={'class':'form-control',
                                         'id':'inputCode',
                                         'placeholder':'验证码',
                                         'name':'code',

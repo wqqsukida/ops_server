@@ -31,5 +31,6 @@ urlpatterns = [
     url(r'^img_edit', views.img_edit),
     url(r'^img_enabled', views.img_enabled),
     url(r'^image_download', views.image_download),
+    url(r'^version_update', views.version_update),
 
 ]

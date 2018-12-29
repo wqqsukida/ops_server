@@ -8,9 +8,27 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import random
 
-def get_code(request):
-    img = Image.new(mode="RGB",size=(120,40),color=(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+def get_code(request,width=120, height=30,font_file='/usr/share/fonts/wqy-microhei/wqy-microhei.ttc', font_size=26):
+    def rndColor():
+        """
+        生成随机颜色
+        :return:
+        """
+        return (random.randint(0, 255), random.randint(10, 255), random.randint(64, 255))
+
+    img = Image.new(mode="RGB",size=(120,40),color=(rndColor()))
     draw = ImageDraw.Draw(img,"RGB")
+    # 写干扰点
+    for i in range(40):
+        draw.point([random.randint(0, width), random.randint(0, height)], fill=rndColor())
+
+    # 写干扰圆圈
+    for i in range(40):
+        draw.point([random.randint(0, width), random.randint(0, height)], fill=rndColor())
+        x = random.randint(0, width)
+        y = random.randint(0, height)
+        draw.arc((x, y, x + 4, y + 4), 0, 90, fill=rndColor())
+
     # 画干扰线
     for i in range(5):
         x1 = random.randint(0, 120)
@@ -18,9 +36,9 @@ def get_code(request):
         x2 = random.randint(0, 120)
         y2 = random.randint(0, 40)
 
-        draw.line((x1, y1, x2, y2), fill=(random.randint(0,255),random.randint(0,255),random.randint(0,255)))
+        draw.line((x1, y1, x2, y2), fill=rndColor())
 
-    font = ImageFont.truetype("/usr/share/fonts/wqy-microhei/wqy-microhei.ttc",20)  #20表示20像素
+    font = ImageFont.truetype(font_file,font_size)  #20表示20像素
 
     str_list = []  #吧每次生成的验证码保存起来
     # 随机生成五个字符
@@ -32,7 +50,7 @@ def get_code(request):
         # print(random_char,"random_char")
         str_list.append(random_char)
         # (5 + i * 24, 10)表示坐标，字体的位置
-        draw.text((5+i*24,10),random_char,(random.randint(0,255),random.randint(0,255),random.randint(0,255)),font=font)
+        draw.text((5+i*24,10),random_char,rndColor(),font=font)
     # print(str_list,"str_list")
     f = BytesIO()#内存文件句柄
     img.save(f,"png")   #img是一个对象

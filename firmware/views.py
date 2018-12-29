@@ -290,3 +290,9 @@ def image_download(request):
         except Exception as e:
             print(traceback.format_exc())
             return HttpResponse('DownLoad Error!(%s)'%str(e))
+
+#===================================================================================
+def version_update(request):
+    if request.method == "GET":
+
+        return render(request,'version_update.html',locals())
