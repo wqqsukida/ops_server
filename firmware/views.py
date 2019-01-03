@@ -4,13 +4,14 @@ from django.forms.models import model_to_dict
 from django.http import FileResponse
 from django.conf import settings
 from firmware.models import *
+from cmdb.models import Server
 from utils.md5 import match
 import json
 import copy
 import time
 import traceback
 import os
-
+from utils.ansible_api import Runner
 
 
 @csrf_exempt
@@ -296,3 +297,32 @@ def version_update(request):
     if request.method == "GET":
 
         return render(request,'version_update.html',locals())
+
+#===================================================================================
+def client_update(request):
+    '''
+    客户端升级
+    :param request:
+    :return:
+    '''
+    if request.method == "POST" :
+        result = {"code":0,"message":"test"}
+        hosts = request.POST.getlist("hosts")
+        if hosts:
+            hosts = ','.join(hosts)+','
+        ansible_client = Runner(hosts)
+        ansible_client.run_playbook()
+        msg = ansible_client.get_playbook_result()
+
+        return HttpResponse(json.dumps(msg))
+
+
+    elif request.method == "GET" :
+        status = request.GET.get("status", "")
+        message = request.GET.get("message", "")
+        if status.isdigit():
+            result = {"code":int(status),"message":message}
+
+        host_query = Server.objects.filter(server_status_id=2)
+
+        return render(request,'client_update.html',locals())

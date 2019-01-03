@@ -1,15 +1,15 @@
 - name: copy dera_ops_client.tar.gz to remote host
   copy: src=dera_ops_client.tar.gz dest=/opt/dera_ops_client.tar.gz
   tags: cppkg
-## 保留客户端原cert_id(客户端升级用,同时playbook下的cert.txt填写{{ cert_id }})
-#- name: create cert_id
-#  shell: cat /opt/dera_ops_client/conf/cert.txt
-#  register: cert
-#- set_fact: cert_id="{{cert.stdout}}"
+# 保留客户端原cert_id(客户端升级用,同时playbook下的cert.txt填写{{ cert_id }})
+- name: create cert_id
+  shell: cat /opt/dera_ops_client/conf/cert.txt
+  register: cert
+- set_fact: cert_id="{{cert.stdout}}"
 
 - name: sync date
   shell: date -s {{ server_date }}
-
+# 设置远程执行sudo
 - name: set sudoers
   shell: sed -i 's/Defaults    requiretty/Defaults    !requiretty/g' /etc/sudoers
 
