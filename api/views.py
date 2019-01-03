@@ -139,7 +139,8 @@ class ServerView(APIAuthView):
         manager = PluginManger()
         response = manager.exec(server_dict)
 
-        print('Response to[{0}]:{1}'.format(clien_ip,response))
+        print('[{0}]Response to[{1}]:{2}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                                 ,clien_ip,response))
         return HttpResponse(json.dumps(response))
 
 class TaskView(APIAuthView):
