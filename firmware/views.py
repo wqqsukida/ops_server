@@ -4,7 +4,7 @@ from django.forms.models import model_to_dict
 from django.http import FileResponse
 from django.conf import settings
 from firmware.models import *
-from cmdb.models import Server
+from cmdb.models import Server,Nvme_ssd
 from utils.md5 import match
 import json
 import copy
@@ -12,7 +12,21 @@ import time
 import traceback
 import os
 from utils.ansible_api import Runner
+from utils.pagination import Pagination
 
+def init_paginaion(request,queryset):
+    # 初始化分页器
+    query_params = copy.deepcopy(request.GET)  # QueryDict
+    current_page = request.GET.get('page', 1)
+    # per_page = config.per_page
+    # pager_page_count = config.pager_page_count
+    all_count = queryset.count()
+    base_url = request.path_info
+    page_obj = Pagination(current_page, all_count, base_url, query_params)
+    query_set = queryset[page_obj.start:page_obj.end]
+    page_html = page_obj.page_html()
+
+    return query_set,page_html
 
 @csrf_exempt
 def version_info(request):
@@ -297,6 +311,81 @@ def version_update(request):
     if request.method == "GET":
 
         return render(request,'version_update.html',locals())
+
+def ssd_update(request):
+    if request.method == "GET":
+        status = request.GET.get("status", "")
+        message = request.GET.get("message", "")
+        if status.isdigit():
+            result = {"code":int(status),"message":message}
+
+        versions = FirmWareVerison.objects.all()
+        choices = Image.image_type_choices
+        ssd = Nvme_ssd.objects.all()
+        return render(request,'ssd_update.html',locals())
+    elif request.method == "POST":
+        result = {}
+        ver_id = request.POST.get("fw_ver")
+        img_type_id = request.POST.get("img_type")
+        ssd_list = request.POST.getlist("ssd_list")
+        if ssd_list:
+            try:
+                res_msg = []
+                for sid in ssd_list:
+                    ssd_obj = Nvme_ssd.objects.get(id=sid)
+                    ssd_model = ssd_obj.model.split('-')[1]
+                    ver_obj = FirmWareVerison.objects.get(id=ver_id)
+                    dev_obj = Device.objects.filter(version=ver_id,device_name=ssd_model).first()
+                    img_obj = Image.objects.filter(image_type=img_type_id,device=dev_obj,enabled=1).first()
+                    if img_obj:
+                        Update_task.objects.create(ssd_obj=ssd_obj,img_obj=img_obj)
+                    else:
+                        res_msg.append('对应设备{0}-{1}的image不存在或者不可用！'.format(ssd_model,ssd_obj.sn))
+                if res_msg:
+                    result = {"code": 2, "message":str(res_msg)}
+                else:
+                    result = {"code": 0, "message": "升级提交成功"}
+            except Exception as e:
+                result = {"code": 1, "message": str(e)}
+        else:
+            result = {"code": 1, "message": "请至少选择一个要升级的设备！"}
+
+        return HttpResponseRedirect('/firmware/ssd_update?status={0}&message={1}'.
+                            format(result.get("code", ""),
+                                   result.get("message", ""),
+                                ))
+
+def host_update(request):
+    if request.method == "GET":
+        status = request.GET.get("status", "")
+        message = request.GET.get("message", "")
+        if status.isdigit():
+            result = {"code":int(status),"message":message}
+
+        versions = FirmWareVerison.objects.all()
+        choices = Image.image_type_choices
+        hosts = Server.objects.all()
+        return render(request,'host_update.html',locals())
+    elif request.method == "POST":
+        result = {}
+        ver_id = request.POST.get("fw_ver")
+        img_type_id = request.POST.get("img_type")
+        host_list = request.POST.getlist("host_list")
+        if host_list:
+
+            result = {"code": 0, "message": "升级提交成功！"}
+        else:
+            result = {"code": 1, "message": "请至少选择一个要升级设备的主机！"}
+
+        return HttpResponseRedirect('/firmware/host_update?status={0}&message={1}'.
+                            format(result.get("code", ""),
+                                   result.get("message", ""),
+                                ))
+
+def update_history(request):
+    queryset = Update_task.objects.all().order_by('-create_date')
+    task_list, page_html = init_paginaion(request, queryset)
+    return render(request,'update_history.html',locals())
 
 #===================================================================================
 def client_update(request):

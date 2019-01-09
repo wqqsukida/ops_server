@@ -25,6 +25,26 @@
     <link href="/static/css/animate.min.css" rel="stylesheet">
     <link href="/static/css/style.min862f.css?v=4.1.0" rel="stylesheet">
     <link href="/static/css/gstyle.css" rel="stylesheet">
+    <style>
+        .button_box {
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            margin: 0 100px 5px 0;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .button_box .fa{
+            display: block;
+            line-height: inherit
+        }
+
+        .panel-body{
+            text-align: center;
+        }
+
+    </style>
 </head>
 
 <body class="gray-bg">
@@ -42,7 +62,8 @@
                 <div class="ibox">
                     <div class="ibox-title">
                         <ol class="breadcrumb">
-                            <h5><a href="/index_v3/">首页</a><B style="color:#ccc">/</B> 固件升级 </h5>
+                            <li><a href="/index_v3"><span class="g_nav_font">首页</span></a></li>
+                            <li class="active">固件升级</li>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -57,7 +78,54 @@
                         </ol>
                     </div>
 
-                    <div class="ibox-content">
+                    <div class="ibox-content ">
+                        <!--
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-content text-center p-md">
+                                        <a href="#" class="button_box btn btn-primary">
+                                            <i class="fa fa-database fa-4x"></i>
+                                            SSD列表
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="ibox float-e-margins">
+                                    <div class="ibox-content text-center p-md">
+                                        <a href="#" class="button_box btn btn-warning">
+                                            <i class="fa fa-television fa-4x"></i>
+                                            主机列表
+                                        </a>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        -->
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+
+                            </div>
+                            <div class="panel-body">
+                                <a href="/firmware/ssd_update" class="button_box btn btn-primary">
+                                    <i class="fa fa-database fa-4x"></i>
+                                    升级设备
+                                </a>
+
+                                <a href="/firmware/host_update" class="button_box btn btn-primary">
+                                    <i class="fa fa-television fa-4x"></i>
+                                    升级主机设备
+                                </a>
+
+                                <a href="/firmware/update_history" class="button_box btn btn-warning">
+                                    <i class="fa fa-history fa-4x"></i>
+                                    升级历史
+                                </a>
+                            </div>
+                        </div>
+
 
                     </div>
                 </div>

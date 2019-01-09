@@ -96,7 +96,7 @@ class Server(models.Model):
         verbose_name_plural = "服务器表"
 
     def __str__(self):
-        return self.hostname
+        return self.manage_ip
 
 
 
@@ -122,7 +122,7 @@ class Nvme_ssd(models.Model):
     Nvme_ssd
     """
     node = models.CharField('',max_length=64)
-    sn = models.CharField('SN号', max_length=128, db_index=True,null=True)
+    sn = models.CharField('SN号', max_length=128,null=True,unique=True)
     model = models.CharField('SSD型号', max_length=256,null=True)
     namespace = models.CharField('', max_length=32,null=True)
     usage = models.CharField('使用情况', max_length=128,null=True)

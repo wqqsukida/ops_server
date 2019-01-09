@@ -47,3 +47,21 @@ class Image(models.Model):
 
     class Meta:
         unique_together = ('image_type', 'device',)
+
+class Update_task(models.Model):
+    """
+
+    """
+    ssd_obj = models.ForeignKey(to='cmdb.Nvme_ssd',related_name='update_task')
+    img_obj = models.ForeignKey(to='Image',related_name='update_task')
+    task_status_choices = (
+        (1, '新建'),
+        (2, '执行完成'),
+        (3, '执行错误'),
+        (4, '执行暂停'),
+        (5, '执行中')
+    )
+    status = models.IntegerField('状态',choices=task_status_choices,default='1')
+    create_date = models.DateTimeField('创建时间',auto_now_add=True)
+    finished_date = models.DateTimeField('完成时间',null=True,blank=True)
+    run_time = models.CharField('总计时间',max_length=32,null=True,blank=True)

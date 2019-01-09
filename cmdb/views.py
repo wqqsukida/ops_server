@@ -17,6 +17,7 @@ from utils.pagination import Pagination
 from django.http.request import QueryDict
 from django.conf import settings
 from utils.filter_row import Row
+from django.forms.models import model_to_dict
 #========================================================================#
 def init_paginaion(request,queryset):
     # 初始化分页器
@@ -275,6 +276,11 @@ def asset_list(request):
         queryset, page_html = init_paginaion(request, queryset)
 
         return render(request,'asset.html',locals())
+    elif request.method == "POST":
+        queryset = Server.objects.all()
+        host_query_list = [{'id':q.id,'manage_ip':q.manage_ip} for q in queryset if q.nvme_ssd.all()]
+
+        return HttpResponse(json.dumps(host_query_list))
 
 def asset_run_tasks(request):
     if request.method == "POST":
@@ -534,6 +540,11 @@ def ssd_list(request):
 
         return render(request,'ssd.html',locals())
 
+    elif request.method == "POST":
+        query_set = Nvme_ssd.objects.all()
+        ssd_list = [{'id':q.id,'ssd':'{0}-{1}-{2}'.format(q.server_obj.manage_ip,q.model.split('-')[1],q.sn)}
+                    for q in query_set]
+        return HttpResponse(json.dumps(ssd_list))
 
 
 def ssd_smartlog(request):

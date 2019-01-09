@@ -10,6 +10,7 @@ import os
 import threading
 import copy
 from cmdb import models
+from firmware import models as fw_models
 from django.db.models import Q
 from .plugins import PluginManger
 from utils.md5 import encrypt
@@ -138,7 +139,26 @@ class ServerView(APIAuthView):
             server_dict['basic']['data']['manage_ip'] = clien_ip
         manager = PluginManger()
         response = manager.exec(server_dict)
-
+        ####################################添加推送主机任务请求######################################
+        cert_id = server_dict.get('cert').strip()
+        server_obj = models.Server.objects.filter(cert_id=cert_id).first()
+        ssd_objs = models.Nvme_ssd.objects.filter(server_obj=server_obj)
+        update_task_query_list = fw_models.Update_task.objects.filter(ssd_obj__in=ssd_objs,status=1).\
+            order_by('create_date')
+        server_runing_update = fw_models.Update_task.objects.filter(ssd_obj__in=ssd_objs,status=5)
+        ut = update_task_query_list.first()    # 只推送一个任务
+        if ut and not server_runing_update:
+            '''
+            存在可推送任务且当前主机没有执行中的任务
+            '''
+            response.update({'utask':{
+                'utask_id':ut.id,
+                'sn':ut.ssd_obj.sn,
+                'img_type':ut.img_obj.get_image_type_display(),
+                'download_url':ut.img_obj.download_url,
+                'args_str':''},
+            })
+            fw_models.Update_task.objects.filter(id=ut.id).update(status=5,create_date=datetime.datetime.now())
         print('Response to[{0}]:{1}'.format(clien_ip,response))
         return HttpResponse(json.dumps(response))
 
@@ -168,5 +188,18 @@ class TaskView(APIAuthView):
         # else:
         #     t_obj.update(status = 3 , finished_date = fd,
         #                   run_time = rt)
+
+        return HttpResponse(json.dumps(response))
+
+class UtaskView(APIAuthView):
+    # @method_decorator(api_auth)
+    def get(self,request,*args,**kwargs):
+        return HttpResponse('Error api method!')
+
+    # @method_decorator(api_auth)
+    def post(self,request,*args,**kwargs):
+        response = {}
+        res = json.loads(request.body.decode('utf-8'))
+        print(res)
 
         return HttpResponse(json.dumps(response))

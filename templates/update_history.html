@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:01 GMT -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>H+ 后台主题UI框架 - 数据表格</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link rel="shortcut icon" href="../static/favicon.ico">
+    <link href="/static/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+{#    <link href="/static/css/plugins/footable/footable.core.css" rel="stylesheet">#}
+    <link href="/static/css/font-awesome.min93e3.css" rel="stylesheet">
+    <link href="/static/css/animate.min.css" rel="stylesheet">
+    <link href="/static/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/css/gstyle.css" rel="stylesheet">
+    <!-- bootstrap-select -->
+    <link rel="stylesheet" href="/static/css/plugins/bootstrap-select/bootstrap-select.css">
+    <link rel="stylesheet" href="/static/css/plugins/double-bootstrap/doublebox-bootstrap.css">
+
+</head>
+
+<body class="gray-bg">
+    <!--通知消息处-->
+    {% if result  %}
+        {% if result.code == 0 %}
+            <div class="alert alert-success alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行成功:<strong>{{ result.message }}</strong>
+            </div>
+        {% elif result.code == 1 %}
+            <div class="alert alert-danger alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行失败:<strong>{{ result.message }}</strong>
+            </div>
+        {% elif result.code == 2 %}
+            <div class="alert alert-warning alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行错误:<strong>{{ result.message }}</strong>
+            </div>
+        {% endif %}
+    {% endif %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                              <li><a href="/index_v3"><span class="g_nav_font">首页</span></a></li>
+                              <li><a href="/firmware/version_update"><span class="g_nav_font">固件升级</span></a></li>
+                              <li class="active">升级历史</li>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a onclick="window.location.reload()">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </ol>
+                    </div>
+
+                    <div class="ibox-content ">
+                        <table class="table table-striped table-bordered table-hover dataTables-example" data-page-size="20">
+                            <thead>
+                                <tr>
+                                    <th>主机</th>
+                                    <th>设备sn</th>
+                                    <th>产品类型</th>
+                                    <th>固件类型</th>
+                                    <th>升级版本</th>
+                                    <th>固件下载地址</th>
+                                    <th>创建时间</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for t in task_list %}
+                                <tr>
+                                    <td>{{ t.ssd_obj.server_obj.manage_ip }}</td>
+                                    <td>{{ t.ssd_obj.sn }}</td>
+                                    <td>{{ t.img_obj.device.device_name }}</td>
+                                    <td>{{ t.img_obj.get_image_type_display }}</td>
+                                    <td>{{ t.img_obj.device.version.version_name }}</td>
+                                    <td>{{ t.img_obj.download_url }}</td>
+                                    <td>{{ t.create_date | date:'Y-m-d H:i:s'}}</td>
+                                    <td>
+                                        {% if t.status == 1 %}
+                                            <a class="btn-sm btn-success">{{ t.get_status_display }}</a>
+                                        {% elif t.status == 2 %}
+                                            <a class="btn-sm btn-primary">{{ t.get_status_display }}</a>
+                                        {% elif t.status == 3 %}
+                                            <a class="btn-sm btn-danger">{{ t.get_status_display }}</a>
+                                        {% elif t.status == 4 %}
+                                            <a class="btn-sm btn-warning">{{ t.get_status_display }}</a>
+                                        {% elif t.status == 5 %}
+                                            <a class="btn-sm btn-info">{{ t.get_status_display }}</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+
+                        </table>
+                        <div class="row">
+                            <div class="col-md-6 col-md-offset-3" style="text-align: center">
+                                <ul class="pagination">
+                                    {{ page_html|safe }}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script src="/static/js/plugins/jeditable/jquery.jeditable.js"></script>
+    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+{#    <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>#}
+    <script src="/static/js/plugins/layer/layer.min.js"></script>
+    <!-- jQuery Validation plugin javascript-->
+    <script src="/static/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="/static/js/plugins/validate/messages_zh.min.js"></script>
+{#    <script src="/static/js/plugins/footable/footable.all.min.js"></script>#}
+    <!-- 自定义js -->
+    <script src="/static/js/content.min.js?v=1.0.0"></script>
+
+</body>

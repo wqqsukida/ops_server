@@ -148,6 +148,7 @@ VALID_URL= [
     '^/api/server/',
     '^/api/task/',
     '^/api/stask/',
+    '^/api/utask/',
     '^/api/file/',
     '^/api/test/',
     '^/firmware/image_download/',
