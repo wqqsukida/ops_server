@@ -383,10 +383,19 @@ def host_update(request):
                                 ))
 
 def update_history(request):
-    queryset = Update_task.objects.all().order_by('-create_date')
-    task_list, page_html = init_paginaion(request, queryset)
-    return render(request,'update_history.html',locals())
+    if request.method == "GET":
+        queryset = Update_task.objects.all().order_by('-create_date')
+        task_list, page_html = init_paginaion(request, queryset)
+        return render(request,'update_history.html',locals())
+    elif request.method == "POST":
+        id = request.POST.get("task_id")
+        img_obj = Update_task.objects.get(id=id)
+        u_res = '升级执行中...'
+        res = img_obj.update_res
+        if res:
+            u_res = res
 
+        return HttpResponse(json.dumps(u_res))
 #===================================================================================
 def client_update(request):
     '''

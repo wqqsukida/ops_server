@@ -91,6 +91,7 @@
                                     <th>升级版本</th>
                                     <th>固件下载地址</th>
                                     <th>创建时间</th>
+                                    <th>运行时间</th>
                                     <th>状态</th>
                                 </tr>
                             </thead>
@@ -104,6 +105,12 @@
                                     <td>{{ t.img_obj.device.version.version_name }}</td>
                                     <td>{{ t.img_obj.download_url }}</td>
                                     <td>{{ t.create_date | date:'Y-m-d H:i:s'}}</td>
+                                    <td>
+                                        <a class="btn-sm btn-success get_task_res" style="" task_id="{{ t.id }}" title="查看升级结果" data-toggle="modal" data-target="#TaskModal">
+                                            <i class="fa fa-clock-o"></i>
+                                            {{ t.run_time }}
+                                        </a>
+                                    </td>
                                     <td>
                                         {% if t.status == 1 %}
                                             <a class="btn-sm btn-success">{{ t.get_status_display }}</a>
@@ -135,6 +142,22 @@
         </div>
     </div>
 
+    <div class="modal inmodal" id="TaskModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">固件升级结果</h4>
+                </div>
+                <div class="panel-body">
+                    <pre id="get-res" style="overflow: auto; height: 380px; line-height: 20px;">
+
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 全局js -->
     <script src="/static/js/jquery.min.js?v=2.1.4"></script>
     <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
@@ -150,5 +173,29 @@
 {#    <script src="/static/js/plugins/footable/footable.all.min.js"></script>#}
     <!-- 自定义js -->
     <script src="/static/js/content.min.js?v=1.0.0"></script>
+
+    <script>
+        $("table").on("click",".get_task_res",function (){
+            task_id = $(this).attr('task_id');
+            $("#get-res").empty();
+            $.ajax({
+                url:'/firmware/update_history',
+                type:'POST',
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                data:{task_id:task_id},
+                dataType:'JSON',
+                success:function (arg) {
+                    if(arg){
+
+                        $("#get-res").append(arg)
+
+                    }
+                    else{
+
+                    }
+                }
+            })
+        })
+    </script>
 
 </body>

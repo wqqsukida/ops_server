@@ -139,27 +139,8 @@ class ServerView(APIAuthView):
             server_dict['basic']['data']['manage_ip'] = clien_ip
         manager = PluginManger()
         response = manager.exec(server_dict)
-        ####################################添加推送主机任务请求######################################
-        cert_id = server_dict.get('cert').strip()
-        server_obj = models.Server.objects.filter(cert_id=cert_id).first()
-        ssd_objs = models.Nvme_ssd.objects.filter(server_obj=server_obj)
-        update_task_query_list = fw_models.Update_task.objects.filter(ssd_obj__in=ssd_objs,status=1).\
-            order_by('create_date')
-        server_runing_update = fw_models.Update_task.objects.filter(ssd_obj__in=ssd_objs,status=5)
-        ut = update_task_query_list.first()    # 只推送一个任务
-        if ut and not server_runing_update:
-            '''
-            存在可推送任务且当前主机没有执行中的任务
-            '''
-            response.update({'utask':{
-                'utask_id':ut.id,
-                'sn':ut.ssd_obj.sn,
-                'img_type':ut.img_obj.get_image_type_display(),
-                'download_url':ut.img_obj.download_url,
-                'args_str':''},
-            })
-            fw_models.Update_task.objects.filter(id=ut.id).update(status=5,create_date=datetime.datetime.now())
-        print('Response to[{0}]:{1}'.format(clien_ip,response))
+        print('[{0}][Server_info]Response to[{1}]:{2}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                                 ,clien_ip,response))
         return HttpResponse(json.dumps(response))
 
 class TaskView(APIAuthView):
@@ -198,8 +179,39 @@ class UtaskView(APIAuthView):
 
     # @method_decorator(api_auth)
     def post(self,request,*args,**kwargs):
-        response = {}
-        res = json.loads(request.body.decode('utf-8'))
-        print(res)
+        if request.META.get('HTTP_X_FORWARDED_FOR'):
+            clien_ip = request.META['HTTP_X_FORWARDED_FOR']
+        else:
+            clien_ip = request.META['REMOTE_ADDR']
 
+        rep = json.loads(request.body.decode('utf-8'))    #结果必须为字典形式
+        res = rep.get("update_res")
+        if res:
+            ut_obj = fw_models.Update_task.objects.filter(id=res.get('utask_id'))
+            ut_obj.update(status=res.get('status_code'),
+                          run_time=res.get('run_time'),
+                          update_res=res.get("message"))
+        ####################################添加推送主机任务请求######################################
+        cert_id = rep.get("cert_id")
+        response = {}
+        server_obj = models.Server.objects.filter(cert_id=cert_id).first()
+        ssd_objs = models.Nvme_ssd.objects.filter(server_obj=server_obj)
+        update_task_query_list = fw_models.Update_task.objects.filter(ssd_obj__in=ssd_objs,status=1).\
+            order_by('create_date')
+        server_runing_update = fw_models.Update_task.objects.filter(ssd_obj__in=ssd_objs,status=5)
+        ut = update_task_query_list.first()    # 只推送一个任务
+        if ut and not server_runing_update:
+            '''
+            存在可推送任务且当前主机没有执行中的任务
+            '''
+            response.update({'utask':{
+                'utask_id':ut.id,
+                'sn':ut.ssd_obj.sn,
+                'img_type':ut.img_obj.get_image_type_display(),
+                'download_url':ut.img_obj.download_url,
+                'args_str':''},
+            })
+            fw_models.Update_task.objects.filter(id=ut.id).update(status=5,create_date=datetime.datetime.now())
+        print('[{0}][Update]Response to[{1}]:{2}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                                     clien_ip, response))
         return HttpResponse(json.dumps(response))

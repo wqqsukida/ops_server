@@ -62,6 +62,7 @@ class Update_task(models.Model):
         (5, '执行中')
     )
     status = models.IntegerField('状态',choices=task_status_choices,default='1')
+    update_res = models.TextField('任务结果', null=True, blank=True)
     create_date = models.DateTimeField('创建时间',auto_now_add=True)
     finished_date = models.DateTimeField('完成时间',null=True,blank=True)
     run_time = models.CharField('总计时间',max_length=32,null=True,blank=True)
