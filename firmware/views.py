@@ -334,9 +334,12 @@ def ssd_update(request):
                 for sid in ssd_list:
                     ssd_obj = Nvme_ssd.objects.get(id=sid)
                     ssd_model = ssd_obj.model.split('-')[1]
-                    ver_obj = FirmWareVerison.objects.get(id=ver_id)
-                    dev_obj = Device.objects.filter(version=ver_id,device_name=ssd_model).first()
-                    img_obj = Image.objects.filter(image_type=img_type_id,device=dev_obj,enabled=1).first()
+                    img_obj = Image.objects.filter(
+                        device__version_id=ver_id,
+                        device__device_name=ssd_model,
+                        image_type=img_type_id,
+                        enabled=1
+                    ).first()
                     if img_obj:
                         Update_task.objects.create(ssd_obj=ssd_obj,img_obj=img_obj)
                     else:
@@ -372,8 +375,34 @@ def host_update(request):
         img_type_id = request.POST.get("img_type")
         host_list = request.POST.getlist("host_list")
         if host_list:
-
-            result = {"code": 0, "message": "升级提交成功！"}
+            try:
+                res_msg = []
+                for hid in host_list:
+                    server_obj = Server.objects.get(id=hid)
+                    server_ssds_query = Nvme_ssd.objects.filter(server_obj=server_obj)
+                    for ssd_obj in server_ssds_query:
+                        ssd_model = ssd_obj.model.split('-')[1]
+                        # ver_obj = FirmWareVerison.objects.get(id=ver_id)
+                        # dev_obj = Device.objects.filter(version=ver_id,device_name=ssd_model).first()
+                        img_obj = Image.objects.filter(
+                            device__version_id=ver_id,
+                            device__device_name=ssd_model,
+                            image_type=img_type_id,
+                            enabled=1,
+                        ).first()
+                        if img_obj:
+                            Update_task.objects.create(ssd_obj=ssd_obj,img_obj=img_obj)
+                        else:
+                            res_msg.append('对应设备{0}-{1}-{2}的image不存在或者不可用！'.format(
+                                server_obj.manage_ip,
+                                ssd_model,ssd_obj.sn)
+                            )
+                if res_msg:
+                    result = {"code": 2, "message":str(res_msg)}
+                else:
+                    result = {"code": 0, "message": "升级提交成功！"}
+            except Exception as e:
+                result = {"code": 1, "message": str(e)}
         else:
             result = {"code": 1, "message": "请至少选择一个要升级设备的主机！"}
 

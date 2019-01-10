@@ -34,9 +34,26 @@
     <!--通知消息处-->
     {% if result  %}
         {% if result.code == 0 %}
-            <div class="alert alert-success" style="text-align: center">执行成功:<strong>{{ result.message }}</strong></div>
-        {% else %}
-            <div class="alert alert-danger" style="text-align: center">执行失败:<strong>{{ result.message }}</strong></div>
+            <div class="alert alert-success alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行成功:<strong>{{ result.message }}</strong>
+            </div>
+        {% elif result.code == 1 %}
+            <div class="alert alert-danger alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行失败:<strong>{{ result.message }}</strong>
+            </div>
+        {% elif result.code == 2 %}
+            <div class="alert alert-warning alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行错误:<strong>{{ result.message }}</strong>
+            </div>
         {% endif %}
     {% endif %}
     <div class="wrapper wrapper-content animated fadeInRight">
