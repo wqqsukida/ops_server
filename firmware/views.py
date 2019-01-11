@@ -432,7 +432,7 @@ def client_update(request):
     :param request:
     :return:
     '''
-    if request.method == "POST" :
+    if request.method == "PUT" :
         result = {"code":0,"message":"test"}
         hosts = request.POST.getlist("hosts")
         if hosts:
@@ -450,6 +450,13 @@ def client_update(request):
         if status.isdigit():
             result = {"code":int(status),"message":message}
 
-        host_query = Server.objects.filter(server_status_id=2)
+        # host_query = Server.objects.filter(server_status_id=2)
 
         return render(request,'client_update.html',locals())
+
+    elif request.method == "POST" :
+        query_set = Server.objects.filter(server_status_id=2)
+        data = [{"ip":q.manage_ip,"client_ver":"{0}-{1}-{2}".
+            format(q.manage_ip,q.hostname,q.client_version)} for q in query_set]
+
+        return HttpResponse(json.dumps(data))

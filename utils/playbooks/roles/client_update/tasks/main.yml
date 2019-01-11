@@ -7,8 +7,8 @@
   register: cert
 - set_fact: cert_id="{{cert.stdout}}"
 
-- name: sync date
-  shell: date -s {{ server_date }}
+#- name: sync date
+#  shell: date -s {{ server_date }}
 # 设置远程执行sudo
 - name: set sudoers
   shell: sed -i 's/Defaults    requiretty/Defaults    !requiretty/g' /etc/sudoers

@@ -291,6 +291,7 @@ def asset_run_tasks(request):
         server_status_id = request.POST.get("status_ids",None)
         tags = request.POST.getlist("tags",None)
         business_unit = request.POST.getlist("business_units",None)
+        del_hosts = request.POST.get("del_hosts")
         if server_objs:
             try:
                 if server_status_id:
@@ -309,7 +310,10 @@ def asset_run_tasks(request):
                         s.save()
                     code = 0
                     msg="成功修改主机组！"
-
+                elif del_hosts:
+                    server_objs.delete()
+                    code = 0
+                    msg="成功删除主机！"
                 else:
                     code = 1
                     msg = "没有可执行的任务！"
