@@ -206,7 +206,7 @@ class UtaskView(APIAuthView):
             '''
             response.update({'utask':{
                 'utask_id':ut.id,
-                'sn':ut.ssd_obj.sn,
+                'node':ut.ssd_obj.node,
                 'img_type':ut.img_obj.get_image_type_display(),
                 'download_url':ut.img_obj.download_url,
                 'args_str':''},
