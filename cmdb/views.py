@@ -125,6 +125,7 @@ def index(request):
     '''
     user_dict = request.session.get('is_login', None)
     username = user_dict['user']
+    user_obj = UserProfile.objects.get(name=username)
     user_role = user_dict['role']
     # print('---当前登录用户/角色--->',username,user_role)
     return render(request,'index.html',locals())
@@ -546,7 +547,7 @@ def ssd_list(request):
 
     elif request.method == "POST":
         query_set = Nvme_ssd.objects.all()
-        ssd_list = [{'id':q.id,'ssd':'{0}-{1}-{2}'.format(q.server_obj.manage_ip,q.model.split('-')[1],q.sn)}
+        ssd_list = [{'id':q.id,'ssd':'{0}-{1}-{2}-{3}'.format(q.server_obj.manage_ip,q.node,q.model.split('-')[1],q.fw_rev)}
                     for q in query_set]
         return HttpResponse(json.dumps(ssd_list))
 

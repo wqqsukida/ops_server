@@ -43,7 +43,7 @@
                             </span>
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear">
-                                <span class="block m-t-xs"><strong class="font-bold">{{ username }}</strong></span>
+                                <span class="block m-t-xs"><strong class="font-bold">{{ user_obj.name }}</strong></span>
                                 <span class="text-muted text-xs block">{{ user_role }}<b class="caret"></b></span>
                             </span>
                             </a>
@@ -69,6 +69,7 @@
                     </li>
 
                     <li>
+                        {% if user_obj.is_admin %}
                         <a href="#">
                             <i class="fa fa-group"></i>
                             <span class="nav-label">后台权限管理</span>
@@ -89,6 +90,7 @@
                             </li>
                         </ul>
                     </li>
+                    {% endif %}
                     <li>
                         <a href="#">
                             <i class="fa fa-television"></i>

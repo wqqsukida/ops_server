@@ -88,6 +88,7 @@
                                     <th>设备sn</th>
                                     <th>产品类型</th>
                                     <th>固件类型</th>
+                                    <th>当前版本</th>
                                     <th>升级版本</th>
                                     <th>固件下载地址</th>
                                     <th>创建时间</th>
@@ -102,26 +103,27 @@
                                     <td>{{ t.ssd_obj.sn }}</td>
                                     <td>{{ t.img_obj.device.device_name }}</td>
                                     <td>{{ t.img_obj.get_image_type_display }}</td>
+                                    <td>{{ t.ssd_obj.fw_rev }}</td>
                                     <td>{{ t.img_obj.device.version.version_name }}</td>
                                     <td>{{ t.img_obj.download_url }}</td>
                                     <td>{{ t.create_date | date:'Y-m-d H:i:s'}}</td>
                                     <td>
-                                        <a class="btn-sm btn-success get_task_res" style="" task_id="{{ t.id }}" title="查看升级结果" data-toggle="modal" data-target="#TaskModal">
+                                        <a class="btn btn-sm btn-success get_task_res" style="" task_id="{{ t.id }}" title="查看升级结果" data-toggle="modal" data-target="#TaskModal">
                                             <i class="fa fa-clock-o"></i>
                                             {{ t.run_time }}
                                         </a>
                                     </td>
                                     <td>
                                         {% if t.status == 1 %}
-                                            <a class="btn-sm btn-success">{{ t.get_status_display }}</a>
+                                            <a class="btn btn-sm btn-success">{{ t.get_status_display }}</a>
                                         {% elif t.status == 2 %}
-                                            <a class="btn-sm btn-primary">{{ t.get_status_display }}</a>
+                                            <a class="btn btn-sm btn-primary">{{ t.get_status_display }}</a>
                                         {% elif t.status == 3 %}
-                                            <a class="btn-sm btn-danger">{{ t.get_status_display }}</a>
+                                            <a class="btn btn-sm btn-danger">{{ t.get_status_display }}</a>
                                         {% elif t.status == 4 %}
-                                            <a class="btn-sm btn-warning">{{ t.get_status_display }}</a>
+                                            <a class="btn btn-sm btn-warning">{{ t.get_status_display }}</a>
                                         {% elif t.status == 5 %}
-                                            <a class="btn-sm btn-info">{{ t.get_status_display }}</a>
+                                            <a class="btn btn-sm btn-info">{{ t.get_status_display }}</a>
                                         {% endif %}
                                     </td>
                                 </tr>
