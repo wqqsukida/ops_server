@@ -184,7 +184,7 @@
             $.ajax({
                 url: "/firmware/client_update",
                 headers:{"X-CSRFToken": $.cookie('csrftoken')},
-                type: "post",
+                type: "put",
                 dataType: "json",
                 contentType: "application/json",
                 success: function (arg) {
@@ -215,7 +215,7 @@
             $.bootstrapLoading.start({ loadingTips: "正在更新客户端，请稍候..." });
             $.ajax({
                 url:"/firmware/client_update",
-                type:"PUT",
+                type:"post",
                 headers:{"X-CSRFToken": $.cookie('csrftoken')},
                 data:$(".input-box").serialize(),
                 dataType:'JSON',

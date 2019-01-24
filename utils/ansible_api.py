@@ -66,7 +66,7 @@ class Runner(object):
 
         self.variable_manager = VariableManager(loader=self.loader, inventory=self.inventory)
         # 扩展加入变量用户名,密码
-        self.variable_manager.extra_vars = {"ansible_user": "root", "ansible_ssh_pass": "Password1",
+        self.variable_manager.extra_vars = {"ansible_user": "root", "ansible_ssh_pass": "P@44w.rD",
                                             "server_date":'"%s"'%datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         self.passwords = None
         self.results_raw = {}
