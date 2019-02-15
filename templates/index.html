@@ -71,22 +71,40 @@
                     <li>
                         {% if user_obj.is_admin %}
                         <a href="#">
-                            <i class="fa fa-group"></i>
+                            <i class="fa fa-lock"></i>
                             <span class="nav-label">后台权限管理</span>
                             <span class="fa arrow"></span>
                         </a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a class="J_menuItem" href="/rbac/users_list">用户管理</a>
+                                <a class="J_menuItem" href="/rbac/users_list">
+                                    <i class="fa fa-user"></i>
+                                    <span class="nav-label">用户管理</span>
+                                </a>
                             </li>
                             <li>
-                                <a class="J_menuItem" href="/rbac/roles_list">用户组管理</a>
+                                <a class="J_menuItem" href="/rbac/roles_list">
+                                    <i class="fa fa-users"></i>
+                                    <span class="nav-label">用户组管理</span>
+                                </a>
                             </li>
                             <li>
-                                <a class="J_menuItem" href="/rbac/permissions_list">权限管理</a>
+                                <a class="J_menuItem" href="/rbac/permissions_list">
+                                    <i class="fa fa-history"></i>
+                                    <span class="nav-label">权限管理</span>
+                                </a>
                             </li>
                             <li>
-                                <a class="J_menuItem" href="/rbac/business_list">主机组管理</a>
+                                <a class="J_menuItem" href="/rbac/business_list">
+                                    <i class="fa fa-television"></i>
+                                    <span class="nav-label">主机组管理</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="J_menuItem" href="/firmware/client_update">
+                                    <i class="fa fa-space-shuttle"></i>
+                                    <span class="nav-label">客户端升级</span>
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -99,12 +117,18 @@
                         </a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a class="J_menuItem" href="/cmdb/ssd_list">SSD管理</a>
+                                <a class="J_menuItem" href="/cmdb/ssd_list">
+                                    <i class="fa fa-hdd-o"></i>
+                                    <span class="nav-label">SSD管理</span>
+                                </a>
                             </li>
                         </ul>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a class="J_menuItem" href="/cmdb/asset_list">主机管理</a>
+                                <a class="J_menuItem" href="/cmdb/asset_list">
+                                    <i class="fa fa-desktop"></i>
+                                    <span class="nav-label">主机管理</span>
+                                </a>
                             </li>
                         </ul>
                     </li>
@@ -136,23 +160,22 @@
                         </a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a class="J_menuItem" href="/firmware/version_info">版本信息</a>
+                                <a class="J_menuItem" href="/firmware/version_info">
+                                    <i class="fa fa-sitemap"></i>
+                                    <span class="nav-label">版本信息</span>
+                                </a>
                             </li>
                             <li>
-                                <a class="J_menuItem" href="/firmware/version_update">固件升级</a>
+                                <a class="J_menuItem" href="/firmware/version_update">
+                                    <i class="fa fa-rocket"></i>
+                                    <span class="nav-label">固件升级</span>
+                                </a>
                             </li>
                             <!--
                             <li>
                                 <a class="J_menuItem" href="#">客户端升级</a>
                             </li>
                             -->
-                            <li>
-                                <a class="J_menuItem" href="/firmware/client_update">
-                                    <i class="fa fa-space-shuttle"></i>
-                                    <span class="nav-label">客户端升级</span>
-                                </a>
-                            </li>
-
                         </ul>
                     </li>
 
