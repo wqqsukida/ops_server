@@ -150,26 +150,42 @@ class TaskView(APIAuthView):
 
     # @method_decorator(api_auth)
     def post(self,request,*args,**kwargs):
-        response = {}
-        # fd = datetime.datetime.now()
+        if request.META.get('HTTP_X_FORWARDED_FOR'):
+            clien_ip = request.META['HTTP_X_FORWARDED_FOR']
+        else:
+            clien_ip = request.META['REMOTE_ADDR']
         res = json.loads(request.body.decode('utf-8'))    #结果必须为字典形式
-
+        stask_res = res.get('stask_res')
+        stask_id = res.get('stask_id')
         s_obj = models.Server.objects.filter(cert_id=res.get('cert_id')).first()
-        if s_obj:
-            models.Task.objects.update_or_create(server_obj=s_obj,defaults=res.get('task_res'))
-        # t_obj = models.Task.objects.filter(server=s_obj)
-        # t_obj.update()
-        # cd = t_obj.first().create_date
-        # rt = fd - cd  # 计算出实际运行时间
-        # # for res in res_list:
-        # if res.get('task_res'):
-        #     t_obj.update(status = 2 , finished_date = fd,
-        #                   run_time = rt ,
-        #                   task_res=res.get('task_res'))
-        # else:
-        #     t_obj.update(status = 3 , finished_date = fd,
-        #                   run_time = rt)
+        #即时返回当前主机执行任务的状态，更新到task表
+        models.FocusTask.objects.update_or_create(server_obj=s_obj,defaults=stask_res)
+        #如果存在执行完成(状态2,3)的任务，更新servertask表
+        if stask_id:
+            st_obj = models.ServerTask.objects.filter(id=stask_id)
+            st_obj.update(status=stask_res.get('status'),
+                          msg=stask_res.get('msg'),
+                          elapsed=stask_res.get('elapsed')
+                          )
+        ####################################添加推送主机任务请求######################################
+        response = {}
 
+        server_task_query_list = models.ServerTask.objects.filter(server_obj=s_obj,status=1).\
+            order_by('create_date')
+        server_runing_task = models.ServerTask.objects.filter(server_obj=s_obj,status=5)
+        st = server_task_query_list.first()    # 只推送一个任务
+        if st and not server_runing_task:
+            '''
+            存在可推送任务且当前主机没有执行中的任务
+            '''
+            response.update({'stask': {'stask_id': st.id,
+                                       'name': st.name,
+                                       'path':st.path,
+                                       'args_str': st.args},
+                             })
+            models.ServerTask.objects.filter(id=st.id).update(status=5, create_date=datetime.datetime.now())
+        print('[{0}][ServerTask]Response to[{1}]:{2}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                                             clien_ip, response))
         return HttpResponse(json.dumps(response))
 
 class UtaskView(APIAuthView):
@@ -191,7 +207,7 @@ class UtaskView(APIAuthView):
             ut_obj.update(status=res.get('status_code'),
                           run_time=res.get('run_time'),
                           update_res=res.get("message"))
-        ####################################添加推送主机任务请求######################################
+        ####################################添加推送升级任务请求######################################
         cert_id = rep.get("cert_id")
         response = {}
         server_obj = models.Server.objects.filter(cert_id=cert_id).first()

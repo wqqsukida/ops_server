@@ -136,12 +136,12 @@
                                                     <a class="btn-sm btn-warning">{{ h.get_server_status_id_display }}</a>
                                                 {% endif %}
                                             </td>
-                                            <td>{{ h.server_task.name }}</td>
-                                            <td>{{ h.server_task.path }}</td>
-                                            <td>{{ h.server_task.args }}</td>
-                                            <td>{{ h.server_task.status }}</td>
-                                            <td>{{ h.server_task.msg }}</td>
-                                            <td>{{ h.server_task.elapsed }}</td>
+                                            <td>{{ h.server_focus_task.name }}</td>
+                                            <td>{{ h.server_focus_task.path }}</td>
+                                            <td>{{ h.server_focus_task.args }}</td>
+                                            <td>{{ h.server_focus_task.status }}</td>
+                                            <td>{{ h.server_focus_task.msg }}</td>
+                                            <td>{{ h.server_focus_task.elapsed }}</td>
                                             <td>{{ h.comment }}</td>
                                             <td class="tooltip-demo" style="font-size: 20px">
                                                 <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/del_focus?host_id={{ h.id }}" title="删除" class="del_confirm" style="margin-left: 15px">
