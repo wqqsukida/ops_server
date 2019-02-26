@@ -196,7 +196,8 @@ def img_add(request):
                 new_image_file = os.path.join(file_path,'%s_%s'%(image_file_obj.name,file_md5))
                 os.rename(image_file,new_image_file) #重命名文件
                 # 4.数据库添加
-                download_url = 'http://10.0.2.20/firmware/image_download/?fid={0}'.format(file_md5)
+                server_ip = settings.SERVER_IP
+                download_url = 'http://{0}/firmware/image_download/?fid={1}'.format(server_ip,file_md5)
                 Image.objects.create(device=device_obj,image_type=image_type,download_url=download_url,
                                      md5=file_md5,file_path=new_image_file,is_url=False)
             else:

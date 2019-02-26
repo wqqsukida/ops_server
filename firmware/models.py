@@ -55,11 +55,11 @@ class Update_task(models.Model):
     ssd_obj = models.ForeignKey(to='cmdb.Nvme_ssd',related_name='update_task')
     img_obj = models.ForeignKey(to='Image',related_name='update_task')
     task_status_choices = (
-        (1, '新建'),
-        (2, '执行完成'),
-        (3, '执行错误'),
-        (4, '执行暂停'),
-        (5, '执行中')
+        (1, 'NEW'),
+        (2, 'FINISH'),
+        (3, 'ERROR'),
+        (4, 'PAUSE'),
+        (5, 'RUNNING')
     )
     status = models.IntegerField('状态',choices=task_status_choices,default='1')
     update_res = models.TextField('任务结果', null=True, blank=True)

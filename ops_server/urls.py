@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^cmdb/', include("cmdb.urls")),
     url(r'^rbac/', include("rbac.urls")),
     url(r'^firmware/', include("firmware.urls")),
+    url(r'^task/', include("task.urls")),
     url(r'^login/', views.login),
     url(r'^get_code/', get_code_img.get_code),
     url(r'^logout/', views.logout),

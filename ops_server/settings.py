@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'cmdb.apps.CmdbConfig',
     'rbac.apps.RbacConfig',
     'firmware.apps.FirmwareConfig',
+    'task.apps.TaskConfig',
     'rest_framework',
     'django_crontab',
 ]
@@ -134,6 +135,7 @@ STATIC_URL = '/static/'
 #     os.path.join(BASE_DIR, 'static'),
 # )
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
+SERVER_IP = '10.0.2.20'
 ############################ 权限管理相关 ################################
 PERMISSION_MENU_KEY = "%&^%hdgddadsa&^ddadasd"
 PERMISSION_URL_DICT_KEY = "lgdjfsjsgvsctewtg"

@@ -90,7 +90,7 @@ class Server(models.Model):
     latest_date = models.DateTimeField(null=True,blank=True)
     client_version = models.CharField('客户端版本',max_length=32,null=True,blank=True)
     def run_task_count(self):
-        return self.server_task.filter(status=5).count()
+        return self.server_task.name
 
     class Meta:
         verbose_name_plural = "服务器表"
@@ -243,24 +243,3 @@ class FocusTask(models.Model):
     status = models.IntegerField('任务状态',default='0',null=True,blank=True)
     msg = models.TextField('任务信息',null=True,blank=True)
     elapsed = models.CharField('执行时间',max_length=32,null=True,blank=True)
-
-class ServerTask(models.Model):
-    '''
-
-    '''
-    server_obj = models.ForeignKey(to='Server',related_name='server_task')
-    name = models.CharField('任务名',max_length=64,null=True,blank=True)
-    args = models.CharField('任务参数',max_length=128,null=True,blank=True)
-    path = models.CharField('路径',max_length=256,null=True,blank=True)
-    task_status_choices = (
-        (0,'无'),
-        (1, '新任务'),
-        (2, '执行完成'),
-        (3, '执行失败'),
-        (4, '执行暂停'),
-        (5, '执行中')
-    )
-    status = models.IntegerField('任务状态',choices=task_status_choices,default='1',null=True,blank=True)
-    msg = models.TextField('任务信息',null=True,blank=True)
-    elapsed = models.CharField('执行时间',max_length=32,null=True,blank=True)
-    create_date = models.DateTimeField('任务创建时间',auto_now_add=True)
