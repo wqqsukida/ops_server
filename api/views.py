@@ -11,6 +11,7 @@ import threading
 import copy
 from cmdb import models
 from firmware import models as fw_models
+from task import models as task_models
 from django.db.models import Q
 from .plugins import PluginManger
 from utils.md5 import encrypt
@@ -162,17 +163,18 @@ class TaskView(APIAuthView):
         models.FocusTask.objects.update_or_create(server_obj=s_obj,defaults=stask_res)
         #如果存在执行完成(状态2,3)的任务，更新servertask表
         if stask_id:
-            st_obj = models.ServerTask.objects.filter(id=stask_id)
+            st_obj = task_models.ServerTask.objects.filter(id=stask_id)
             st_obj.update(status=stask_res.get('status'),
                           msg=stask_res.get('msg'),
-                          elapsed=stask_res.get('elapsed')
+                          elapsed=stask_res.get('elapsed'),
+                          finished_date=datetime.datetime.now()
                           )
         ####################################添加推送主机任务请求######################################
         response = {}
 
-        server_task_query_list = models.ServerTask.objects.filter(server_obj=s_obj,status=1).\
+        server_task_query_list = task_models.ServerTask.objects.filter(server_obj=s_obj,status=1).\
             order_by('create_date')
-        server_runing_task = models.ServerTask.objects.filter(server_obj=s_obj,status=5)
+        server_runing_task = task_models.ServerTask.objects.filter(server_obj=s_obj,status=5)
         st = server_task_query_list.first()    # 只推送一个任务
         if st and not server_runing_task:
             '''
@@ -183,7 +185,7 @@ class TaskView(APIAuthView):
                                        'path':st.path,
                                        'args_str': st.args},
                              })
-            models.ServerTask.objects.filter(id=st.id).update(status=5, create_date=datetime.datetime.now())
+            task_models.ServerTask.objects.filter(id=st.id).update(status=5, create_date=datetime.datetime.now())
         print('[{0}][ServerTask]Response to[{1}]:{2}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                                              clien_ip, response))
         return HttpResponse(json.dumps(response))

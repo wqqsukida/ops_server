@@ -205,7 +205,7 @@ def server_task_session(request):
 
         return render(request,'server_task_session.html',locals())
 
-def server_run_secsession(request):
+def server_run_session(request):
     '''
     单独执行任务会话
     :param request:
@@ -213,18 +213,18 @@ def server_run_secsession(request):
     '''
     if request.method == "GET":
         sid = request.GET.get("mid","")
-        s_obj = Task_SecSession.objects.get(id=sid)
+        s_obj = TaskSession.objects.get(id=sid)
         status = request.GET.get("status")
 
-        fs_id = request.GET.get("fs_id","")
+        # fs_id = request.GET.get("fs_id","")
         page = request.GET.get("page")
 
         if status == "pause" :
-            ServerTask.objects.filter(secsession_obj=s_obj,status=1).update(
+            ServerTask.objects.filter(session_obj=s_obj,status=1).update(
                 status=4,finished_date=datetime.datetime.now())
             result = {"code": 2, "message": "子任务会话已被暂停执行 !"}
         elif status == "redo" :
-            ServerTask.objects.filter(secsession_obj=s_obj,status=4).update(
+            ServerTask.objects.filter(session_obj=s_obj,status=4).update(
                 status=1,finished_date=None
             )
             result = {"code": 0, "message": "子任务会话已恢复执行 !"}
@@ -241,18 +241,19 @@ def server_run_secsession(request):
                 try:
                     for t in s_obj.task_obj.all():
                         for s in server_objs:
-                            ServerTask.objects.create(server_obj=s,task=t,
-                                                      secsession_obj=s_obj)
+                            ServerTask.objects.create(server_obj=s,task_obj=t,name=t.title,
+                                                      path=t.run_path,args=t.args,
+                                                      session_obj=s_obj)
                     result = {"code": 0, "message": "任务会话执行成功 !"}
                 except Exception as e:
                     result = {"code": 1, "message": str(e)}
             else:
                 result = {"code": 1, "message": "你没有权限执行该会话下的任务!"}
 
-        return HttpResponseRedirect('/cmdb/server_task_secsession?status={0}&message={1}&page={2}&sid={3}'.
+        return HttpResponseRedirect('/task/server_task_session?status={0}&message={1}&page={2}'.
                             format(result.get("code", ""),
                                    result.get("message", ""),
-                                   page,fs_id))
+                                   page))
 
 def server_random_runsecs(request):
     '''
@@ -262,7 +263,7 @@ def server_random_runsecs(request):
     '''
     if request.method == "GET":
         sid = request.GET.get("sid","")
-        s_obj = Task_SecSession.objects.get(id=sid)
+        s_obj = TaskSession.objects.get(id=sid)
 
         fs_id = request.GET.get("fs_id","")
         page = request.GET.get("page")
@@ -291,6 +292,32 @@ def server_random_runsecs(request):
                             format(result.get("code", ""),
                                    result.get("message", ""),
                                    page,fs_id))
+
+def server_copy_secsession(request):
+    '''
+    复制当前任务会话
+    :param request:
+    :return:
+    '''
+    if request.method == "GET":
+        ssid = request.GET.get('ssid',None)
+        fs_id = request.GET.get("fs_id")
+        page = request.GET.get("page")
+        try:
+            old_ss = Task_SecSession.objects.filter(id=ssid)
+            task_objs = old_ss.first().task_obj.all()
+            server_objs = old_ss.first().server_obj.all()
+            old_val = old_ss.values('is_random', 'title', 'father_session_id', 'content').first()
+            new_ss = Task_SecSession.objects.create(**old_val)
+            new_ss.task_obj.add(*task_objs)
+            new_ss.server_obj.add(*server_objs)
+            result = {"code": 0, "message": "任务会话复制成功!"}
+        except Exception as e:
+            result = {"code": 1, "message": str(e)}
+        return HttpResponseRedirect('/cmdb/server_task_secsession?status={0}&message={1}&page={2}&sid={3}'.
+                                    format(result.get("code", ""),
+                                           result.get("message", ""),
+                                           page, fs_id))
 
 def server_create_session(request):
     '''
@@ -341,33 +368,6 @@ def server_create_session(request):
                                            result.get("message", ""),
                                            page))
 
-def server_copy_secsession(request):
-    '''
-    复制当前任务会话
-    :param request:
-    :return:
-    '''
-    if request.method == "GET":
-        ssid = request.GET.get('ssid',None)
-        fs_id = request.GET.get("fs_id")
-        page = request.GET.get("page")
-        try:
-            old_ss = Task_SecSession.objects.filter(id=ssid)
-            task_objs = old_ss.first().task_obj.all()
-            server_objs = old_ss.first().server_obj.all()
-            old_val = old_ss.values('is_random', 'title', 'father_session_id', 'content').first()
-            new_ss = Task_SecSession.objects.create(**old_val)
-            new_ss.task_obj.add(*task_objs)
-            new_ss.server_obj.add(*server_objs)
-            result = {"code": 0, "message": "任务会话复制成功!"}
-        except Exception as e:
-            result = {"code": 1, "message": str(e)}
-        return HttpResponseRedirect('/cmdb/server_task_secsession?status={0}&message={1}&page={2}&sid={3}'.
-                                    format(result.get("code", ""),
-                                           result.get("message", ""),
-                                           page, fs_id))
-
-
 def server_edit_session(request):
     '''
     修改任务会话
@@ -417,8 +417,8 @@ def server_edit_session(request):
         mid = request.POST.get("id")
         title = request.POST.get("title",None)
         content = request.POST.get("content",None)
-        # is_random = request.POST.get("is_random",None)
-        # is_random = True if is_random == 'on' else False
+        is_random = request.POST.get("is_random",None)
+        is_random = True if is_random == 'on' else False
         server_obj = request.POST.getlist("sids",None)
         task_obj = request.POST.getlist("tids",None)
         # fs = request.POST.get("fs")
@@ -431,7 +431,7 @@ def server_edit_session(request):
             'server_obj':server_obj,
             'task_obj':task_obj,
             'content':content,
-            # 'is_random':is_random,
+            'is_random':is_random,
             # 'father_session_id':fs
         }
 
@@ -450,7 +450,7 @@ def server_edit_session(request):
                                    result.get("message", ""),
                                    page))
 
-def server_del_secsession(request):
+def server_del_session(request):
     '''
     删除任务会话
     :param request:
@@ -459,14 +459,14 @@ def server_del_secsession(request):
     if request.method == "GET":
         mid = request.GET.get("mid")
 
-        fs_id = request.GET.get("fs_id")
+        # fs_id = request.GET.get("fs_id")
         page = request.GET.get("page")
         try:
-            Task_SecSession.objects.get(id=mid).delete()
+            TaskSession.objects.get(id=mid).delete()
             result = {"code": 0, "message": "任务会话删除成功!"}
         except Exception as e:
             result = {"code": 1, "message": str(e)}
-        return HttpResponseRedirect('/cmdb/server_task_secsession?status={0}&message={1}&page={2}&sid={3}'.
+        return HttpResponseRedirect('/task/server_task_secsession?status={0}&message={1}&page={2}'.
                                     format(result.get("code", ""),
                                            result.get("message", ""),
-                                           page,fs_id))
+                                           page))

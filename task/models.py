@@ -44,7 +44,7 @@ class ServerTask(models.Model):
     msg = models.TextField('任务信息',null=True,blank=True)
     elapsed = models.CharField('执行时间',max_length=32,null=True,blank=True)
     create_date = models.DateTimeField('任务创建时间',auto_now_add=True)
-
+    finished_date = models.DateTimeField('任务完成时间', null=True, blank=True)
 
 class TaskSession(models.Model):
     '''

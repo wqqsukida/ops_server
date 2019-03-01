@@ -191,23 +191,23 @@
                                                     <i class="fa fa-wrench"></i>
                                                 </a>
                                                 {% if m.nst %}
-                                                    <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=pause&mid={{ m.id }}&page={{ page }}&fs_id={{ fs_id }}" class="js_confirm" title="暂停会话" style="margin-right: 15px;color: orange">
+                                                    <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=pause&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="暂停会话" style="margin-right: 15px;color: orange">
                                                         <i class="fa fa-pause"></i>
                                                     </a>
-                                                {% elif m.rst %}
-                                                    <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=redo&mid={{ m.id }}&page={{ page }}&fs_id={{ fs_id }}" class="js_confirm" title="恢复执行" style="margin-right: 15px;color: green">
+                                                {% elif m.pst %}
+                                                    <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=redo&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="恢复执行" style="margin-right: 15px;color: green">
                                                         <i class="fa fa-refresh"></i>
                                                     </a>
                                                 {% else %}
-                                                    <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_del_secsession?mid={{ m.id }}&page={{ page }}&fs_id={{ fs_id }}" class="del_confirm" title="删除会话" style="margin-right: 15px">
+                                                    <a data-toggle="tooltip" data-placement="bottom" href="/task/server_del_session?mid={{ m.id }}&page={{ page }}" class="del_confirm" title="删除会话" style="margin-right: 15px">
                                                         <i class="fa fa-trash-o"></i>
                                                     </a>
                                                     {% if not m.is_random %}
-                                                        <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=run&mid={{ m.id }}&page={{ page }}&fs_id={{ fs_id }}" class="js_confirm" title="执行会话" style="margin-right: 15px">
+                                                        <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=run&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="执行会话" style="margin-right: 15px">
                                                             <i class="fa fa-caret-square-o-right"></i>
                                                         </a>
                                                     {% else %}
-                                                        <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_random_runsecs?sid={{ m.id }}&page={{ page }}&fs_id={{ fs_id }}" class="js_confirm" title="随机执行" style="margin-right: 15px">
+                                                        <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_random_runsecs?sid={{ m.id }}&page={{ page }}" class="js_confirm" title="随机执行" style="margin-right: 15px">
                                                             <i class="fa fa-random"></i>
                                                         </a>
                                                     {% endif %}
@@ -351,20 +351,20 @@
                             </div>
                         </div>
 
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">是否随机执行：</label>#}
-{#                            <div class="col-sm-9" style="padding:15px 30px">#}
-{#                                <div class="switch">#}
-{#                                    <div class="onoffswitch">#}
-{#                                        <input name="is_random" type="checkbox" class="onoffswitch-checkbox" id="is_random">#}
-{#                                        <label class="onoffswitch-label" for="is_random">#}
-{#                                            <span class="onoffswitch-inner"></span>#}
-{#                                            <span class="onoffswitch-switch"></span>#}
-{#                                        </label>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否随机执行：</label>
+                            <div class="col-sm-9" style="padding:15px 30px">
+                                <div class="switch">
+                                    <div class="onoffswitch">
+                                        <input name="is_random" type="checkbox" class="onoffswitch-checkbox" id="is_random">
+                                        <label class="onoffswitch-label" for="is_random">
+                                            <span class="onoffswitch-inner"></span>
+                                            <span class="onoffswitch-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <hr width="100%" />
                         <div class="col-sm-12">
@@ -496,21 +496,21 @@
                             </div>
                         </div>
 
-{#                        <div class="form-group">#}
-{#                            <label class="col-sm-2 control-label">是否随机执行：</label>#}
-{#                            <div class="col-sm-9" style="padding:15px 30px">#}
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">是否随机执行：</label>
+                            <div class="col-sm-9" style="padding:15px 30px">
 {#                                <input type="checkbox" name="is_random" id="mod_is_random">#}
-{#                                <div class="switch">#}
-{#                                    <div class="onoffswitch">#}
-{#                                        <input name="is_random" type="checkbox" class="onoffswitch-checkbox" id="mod_is_random">#}
-{#                                        <label class="onoffswitch-label" for="mod_is_random">#}
-{#                                            <span class="onoffswitch-inner"></span>#}
-{#                                            <span class="onoffswitch-switch"></span>#}
-{#                                        </label>#}
-{#                                    </div>#}
-{#                                </div>#}
-{#                            </div>#}
-{#                        </div>#}
+                                <div class="switch">
+                                    <div class="onoffswitch">
+                                        <input name="is_random" type="checkbox" class="onoffswitch-checkbox" id="mod_is_random">
+                                        <label class="onoffswitch-label" for="mod_is_random">
+                                            <span class="onoffswitch-inner"></span>
+                                            <span class="onoffswitch-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                         <hr width="100%" />
                         <div class="col-sm-12">
@@ -654,7 +654,7 @@
             //$("#mod_task_from").empty();
             //$("#mod_task_to").empty();
             //$("#mod_fs option").prop("selected",false);
-            //$("#mod_is_random").prop("checked",false);
+            $("#mod_is_random").prop("checked",false);
 
             $.ajax({
                 url: "/task/server_edit_session",
@@ -667,9 +667,9 @@
                         $("#mod_id").val(arg.id);
                         $("#mod_title").val(arg.title);
                         $("#mod_content").val(arg.content);
-                        //if(arg.is_random){
-                        //    $("#mod_is_random").prop("checked",true)
-                        //}
+                        if(arg.is_random){
+                            $("#mod_is_random").prop("checked",true)
+                        }
                         $('.mod_box').doublebox({
                             //nonSelectedListLabel: '源菜单',
                             //selectedListLabel: '目标菜单',

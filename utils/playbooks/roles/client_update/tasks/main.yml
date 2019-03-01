@@ -2,10 +2,10 @@
   copy: src=dera_ops_client.tar.gz dest=/opt/dera_ops_client.tar.gz
   tags: cppkg
 # 保留客户端原cert_id(客户端升级用,同时playbook下的cert.txt填写{{ cert_id }})
-#- name: create cert_id
-#  shell: cat /opt/dera_ops_client/conf/cert.txt
-#  register: cert
-#- set_fact: cert_id="{{cert.stdout}}"
+- name: create cert_id
+  shell: cat /opt/dera_ops_client/conf/cert.txt
+  register: cert
+- set_fact: cert_id="{{cert.stdout}}"
 
 #- name: sync date
 #  shell: date -s {{ server_date }}
@@ -22,8 +22,8 @@
 - name: copy run_client.sh
   copy: src=run_client.sh dest=/opt/dera_ops_client/run_client.sh
 
-- name: install pkg
-  shell: easy_install pip;python /opt/dera_ops_client/setup.py
+#- name: install pkg
+#  shell: easy_install pip;python /opt/dera_ops_client/setup.py
 
 - name: restart client
   shell: sh /opt/dera_ops_client/run_client.sh stop;sh /opt/dera_ops_client/run_client.sh start
