@@ -161,10 +161,14 @@ class TaskView(APIAuthView):
         s_obj = models.Server.objects.filter(cert_id=res.get('cert_id')).first()
         #即时返回当前主机执行任务的状态，更新到task表
         models.FocusTask.objects.update_or_create(server_obj=s_obj,defaults=stask_res)
-        #如果存在执行完成(状态2,3)的任务，更新servertask表
+        #如果返回存在stask_id且状态0,3的任务，更新servertask表
         if stask_id:
+            if stask_res.get('status') == '0':
+                status_code = 2
+            else :
+                status_code = stask_res.get('status')
             st_obj = task_models.ServerTask.objects.filter(id=stask_id)
-            st_obj.update(status=stask_res.get('status'),
+            st_obj.update(status=status_code,
                           msg=stask_res.get('msg'),
                           elapsed=stask_res.get('elapsed'),
                           finished_date=datetime.datetime.now()
@@ -181,9 +185,10 @@ class TaskView(APIAuthView):
             存在可推送任务且当前主机没有执行中的任务
             '''
             response.update({'stask': {'stask_id': st.id,
-                                       'name': st.name,
-                                       'path':st.path,
-                                       'args_str': st.args},
+                                       'name': st.task_obj.title,
+                                       'path':st.task_obj.run_path,
+                                       'args_str': st.task_obj.args,
+                                       'download_url':st.task_obj.task_script.download_url},
                              })
             task_models.ServerTask.objects.filter(id=st.id).update(status=5, create_date=datetime.datetime.now())
         print('[{0}][ServerTask]Response to[{1}]:{2}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),

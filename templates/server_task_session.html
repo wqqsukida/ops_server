@@ -152,27 +152,27 @@
                                     {% for m in model_list %}
                                         <tr>
                                             <td class="tooltip-demo">
-                                                <a data-toggle="tooltip" data-placement="bottom" title="查看任务项" class="btn-sm btn-white" href="/cmdb/server_task_status///{{ m.id }}//">
+                                                <a data-toggle="tooltip" data-placement="bottom" title="查看任务项" class="btn-sm btn-white" href="/task/server_task_status//{{ m.id }}//">
                                                     {{ m.title }}
                                                 </a>
                                             </td>
                                             <td class="tooltip-demo" style="text-align:center;font-size: 20px">
-                                                <a href="/cmdb/server_task_status///{{ m.id }}//" class="alert-btn alert-white">{{ m.ast }}</a>
+                                                <a href="/task/server_task_status//{{ m.id }}//" class="alert-btn alert-white">{{ m.ast }}</a>
                                             </td>
                                             <td class="tooltip-demo" style="text-align:center;font-size: 20px">
-                                                <a title="新任务" data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_task_status///{{ m.id }}/1/" class="alert-btn alert-info">{{ m.nst }}</a>
+                                                <a title="新任务" data-toggle="tooltip" data-placement="bottom" href="/task/server_task_status//{{ m.id }}/1/" class="alert-btn alert-info">{{ m.nst }}</a>
                                             </td>
                                             <td class="tooltip-demo" style="text-align:center;font-size: 20px">
-                                                <a title="执行完成" data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_task_status///{{ m.id }}/2/" class="alert-btn alert-success">{{ m.fst }}</a>
+                                                <a title="执行完成" data-toggle="tooltip" data-placement="bottom" href="/task/server_task_status//{{ m.id }}/2/" class="alert-btn alert-success">{{ m.fst }}</a>
                                             </td>
                                             <td class="tooltip-demo" style="text-align:center;font-size: 20px">
-                                                <a title="执行中" data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_task_status///{{ m.id }}/5/" class="alert-btn alert-primary">{{ m.rst }}</a>
+                                                <a title="执行中" data-toggle="tooltip" data-placement="bottom" href="/task/server_task_status//{{ m.id }}/5/" class="alert-btn alert-primary">{{ m.rst }}</a>
                                             </td>
                                             <td class="tooltip-demo" style="text-align:center;font-size: 20px">
-                                                <a title="执行失败" data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_task_status///{{ m.id }}/3/" class="alert-btn alert-danger">{{ m.est }}</a>
+                                                <a title="执行失败" data-toggle="tooltip" data-placement="bottom" href="/task/server_task_status//{{ m.id }}/3/" class="alert-btn alert-danger">{{ m.est }}</a>
                                             </td>
                                             <td class="tooltip-demo" style="text-align:center;font-size: 20px">
-                                                <a title="执行暂停" data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_task_status///{{ m.id }}/4/" class="alert-btn alert-warning">{{ m.pst }}</a>
+                                                <a title="执行暂停" data-toggle="tooltip" data-placement="bottom" href="/task/server_task_status//{{ m.id }}/4/" class="alert-btn alert-warning">{{ m.pst }}</a>
                                             </td>
         {#                                            <td>#}
         {#                                                {% for t in m.task_obj.values %}#}
@@ -191,11 +191,11 @@
                                                     <i class="fa fa-wrench"></i>
                                                 </a>
                                                 {% if m.nst %}
-                                                    <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=pause&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="暂停会话" style="margin-right: 15px;color: orange">
+                                                    <a data-toggle="tooltip" data-placement="bottom" href="/task/server_run_session?status=pause&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="暂停会话" style="margin-right: 15px;color: orange">
                                                         <i class="fa fa-pause"></i>
                                                     </a>
                                                 {% elif m.pst %}
-                                                    <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=redo&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="恢复执行" style="margin-right: 15px;color: green">
+                                                    <a data-toggle="tooltip" data-placement="bottom" href="/task/server_run_session?status=redo&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="恢复执行" style="margin-right: 15px;color: green">
                                                         <i class="fa fa-refresh"></i>
                                                     </a>
                                                 {% else %}
@@ -203,16 +203,16 @@
                                                         <i class="fa fa-trash-o"></i>
                                                     </a>
                                                     {% if not m.is_random %}
-                                                        <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_run_secsession?status=run&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="执行会话" style="margin-right: 15px">
+                                                        <a data-toggle="tooltip" data-placement="bottom" href="/task/server_run_session?status=run&mid={{ m.id }}&page={{ page }}" class="js_confirm" title="执行会话" style="margin-right: 15px">
                                                             <i class="fa fa-caret-square-o-right"></i>
                                                         </a>
                                                     {% else %}
-                                                        <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_random_runsecs?sid={{ m.id }}&page={{ page }}" class="js_confirm" title="随机执行" style="margin-right: 15px">
+                                                        <a data-toggle="tooltip" data-placement="bottom" href="/task/server_random_run?sid={{ m.id }}&page={{ page }}" class="js_confirm" title="随机执行" style="margin-right: 15px">
                                                             <i class="fa fa-random"></i>
                                                         </a>
                                                     {% endif %}
                                                 {% endif %}
-                                                <a data-toggle="tooltip" data-placement="bottom" href="/cmdb/server_copy_secsession?ssid={{ m.id }}&page={{ page }}&fs_id={{ fs_id }}" class="js_confirm" title="复制会话" style="margin-right: 15px">
+                                                <a data-toggle="tooltip" data-placement="bottom" href="/task/server_copy_session?sid={{ m.id }}&page={{ page }}" class="js_confirm" title="复制会话" style="margin-right: 15px">
                                                     <i class="fa fa-copy"></i>
                                                 </a>
                                             </td>

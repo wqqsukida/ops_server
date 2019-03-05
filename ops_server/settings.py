@@ -154,6 +154,7 @@ VALID_URL= [
     '^/api/file/',
     '^/api/test/',
     '^/firmware/image_download/',
+    '^/task/taskscript_download/',
     # '^/cmdb/asset_list/',
 ]
 

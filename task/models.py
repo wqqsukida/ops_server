@@ -30,9 +30,9 @@ class ServerTask(models.Model):
     server_obj = models.ForeignKey(to='cmdb.Server',related_name='server_task')
     task_obj = models.ForeignKey(to='TaskMethod')
     session_obj = models.ForeignKey(to='TaskSession', null=True, blank=True)
-    name = models.CharField('任务名',max_length=64,null=True,blank=True)
-    args = models.CharField('任务参数',max_length=128,null=True,blank=True)
-    path = models.CharField('路径',max_length=256,null=True,blank=True)
+    # name = models.CharField('任务名',max_length=64,null=True,blank=True)
+    # args = models.CharField('任务参数',max_length=128,null=True,blank=True)
+    # path = models.CharField('路径',max_length=256,null=True,blank=True)
     task_status_choices = (
         (1, 'NEW'),
         (2, 'FINISH'),

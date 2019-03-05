@@ -17,6 +17,7 @@ from django.urls import reverse
 from utils.pagination import Pagination
 from django.http.request import QueryDict
 from django.conf import settings
+from utils.filter_row import Row
 
 #========================================================================#
 def init_paginaion(request,queryset):
@@ -241,9 +242,9 @@ def server_run_session(request):
                 try:
                     for t in s_obj.task_obj.all():
                         for s in server_objs:
-                            ServerTask.objects.create(server_obj=s,task_obj=t,name=t.title,
-                                                      path=t.run_path,args=t.args,
-                                                      session_obj=s_obj)
+                            ServerTask.objects.create(server_obj=s,task_obj=t,session_obj=s_obj
+                                                      # name=t.title,path=t.run_path,args=t.args,
+                                                      )
                     result = {"code": 0, "message": "任务会话执行成功 !"}
                 except Exception as e:
                     result = {"code": 1, "message": str(e)}
@@ -255,7 +256,7 @@ def server_run_session(request):
                                    result.get("message", ""),
                                    page))
 
-def server_random_runsecs(request):
+def server_random_run(request):
     '''
     随机执行任务会话里的任务
     :param request:
@@ -265,7 +266,7 @@ def server_random_runsecs(request):
         sid = request.GET.get("sid","")
         s_obj = TaskSession.objects.get(id=sid)
 
-        fs_id = request.GET.get("fs_id","")
+        # fs_id = request.GET.get("fs_id","")
         page = request.GET.get("page")
 
         # 权限处理
@@ -281,43 +282,45 @@ def server_random_runsecs(request):
                 for t in s_obj.task_obj.all():
                     s = random.choice(server_objs)
                     # print(s.hostname,t.title)
-                    ServerTask.objects.create(server_obj=s,task=t,secsession_obj=s_obj)
+                    ServerTask.objects.create(server_obj=s,task_obj=t,session_obj=s_obj,
+                                              # name=t.title,path=t.run_path,args=t.args,
+                                              )
                 result = {"code": 0, "message": "随机执行成功 !"}
             except Exception as e:
                 result = {"code": 1, "message": str(e)}
         else:
             result = {"code": 1, "message": "你没有权限执行该会话下的任务!"}
 
-        return HttpResponseRedirect('/cmdb/server_task_secsession?status={0}&message={1}&page={2}&sid={3}'.
+        return HttpResponseRedirect('/task/server_task_session?status={0}&message={1}&page={2}'.
                             format(result.get("code", ""),
                                    result.get("message", ""),
-                                   page,fs_id))
+                                   page))
 
-def server_copy_secsession(request):
+def server_copy_session(request):
     '''
     复制当前任务会话
     :param request:
     :return:
     '''
     if request.method == "GET":
-        ssid = request.GET.get('ssid',None)
-        fs_id = request.GET.get("fs_id")
+        sid = request.GET.get('sid',None)
+        # fs_id = request.GET.get("fs_id")
         page = request.GET.get("page")
         try:
-            old_ss = Task_SecSession.objects.filter(id=ssid)
-            task_objs = old_ss.first().task_obj.all()
-            server_objs = old_ss.first().server_obj.all()
-            old_val = old_ss.values('is_random', 'title', 'father_session_id', 'content').first()
-            new_ss = Task_SecSession.objects.create(**old_val)
-            new_ss.task_obj.add(*task_objs)
-            new_ss.server_obj.add(*server_objs)
+            old_ts = TaskSession.objects.filter(id=sid)
+            task_objs = old_ts.first().task_obj.all()
+            server_objs = old_ts.first().server_obj.all()
+            old_val = old_ts.values('is_random', 'title',  'content').first()
+            new_ts = TaskSession.objects.create(**old_val)
+            new_ts.task_obj.add(*task_objs)
+            new_ts.server_obj.add(*server_objs)
             result = {"code": 0, "message": "任务会话复制成功!"}
         except Exception as e:
             result = {"code": 1, "message": str(e)}
-        return HttpResponseRedirect('/cmdb/server_task_secsession?status={0}&message={1}&page={2}&sid={3}'.
+        return HttpResponseRedirect('/task/server_task_session?status={0}&message={1}&page={2}'.
                                     format(result.get("code", ""),
                                            result.get("message", ""),
-                                           page, fs_id))
+                                           page))
 
 def server_create_session(request):
     '''
@@ -466,7 +469,150 @@ def server_del_session(request):
             result = {"code": 0, "message": "任务会话删除成功!"}
         except Exception as e:
             result = {"code": 1, "message": str(e)}
-        return HttpResponseRedirect('/task/server_task_secsession?status={0}&message={1}&page={2}'.
+        return HttpResponseRedirect('/task/server_task_session?status={0}&message={1}&page={2}'.
                                     format(result.get("code", ""),
                                            result.get("message", ""),
                                            page))
+
+#==========主机任务状态视图===========
+def server_task_status(request,sid="",ssid="",sts_id=""):
+    '''
+    任务执行列表
+    :param request:
+    :return:
+    '''
+    if request.method == "GET":
+        # 通知栏
+        task_status = request.GET.get("task_status", "")
+        status = request.GET.get("status", "")
+        message = request.GET.get("message", "")
+        if status.isdigit():
+            result = {"code":int(status),"message":message}
+
+        # server_id = request.GET.get("sid")
+        # secsession_id = request.GET.get("ssid")
+        # st_status_id = request.GET.get("sts_id")
+        # fsid = request.GET.get("fsid")
+        server_id=sid
+        session_id=ssid
+        st_status_id=sts_id
+        # 配置快速组合筛选
+        querydict = request.GET
+        row = Row(
+            [{'id':i[0],'name':i[1]}for i in ServerTask.task_status_choices],
+            querydict,
+            'task_status'
+        )
+
+
+        search_q = request.GET.get("q","").strip()
+        page = request.GET.get('page')
+        q_query = Q(Q(task_obj__title__contains=search_q)|
+                    Q(task_obj__content__contains=search_q)|
+                    Q(server_obj__manage_ip__contains=search_q)|
+                    Q(session_obj__title__contains=search_q)
+                    # Q(secsession_obj__father_session__title__contains=search_q)
+                    )
+
+        if server_id: #从主机列表访问
+            server_obj = cmdb_models.Server.objects.get(id=server_id)
+            queryset = ServerTask.objects.filter(server_obj=server_obj).order_by('-create_date')
+        elif session_id: #从任务会话列表访问
+            ss_obj = TaskSession.objects.get(id=session_id)
+            if st_status_id == '1':
+                queryset = ServerTask.objects.filter(q_query,status=1,session_obj=ss_obj).order_by('-create_date')
+            elif st_status_id == '2':
+                queryset = ServerTask.objects.filter(q_query,status=2,session_obj=ss_obj).order_by('-create_date')
+            elif st_status_id == '3':
+                queryset = ServerTask.objects.filter(q_query,status=3,session_obj=ss_obj).order_by('-create_date')
+            elif st_status_id == '4':
+                queryset = ServerTask.objects.filter(q_query,status=4,session_obj=ss_obj).order_by('-create_date')
+            elif st_status_id == '5':
+                queryset = ServerTask.objects.filter(q_query,status=5,session_obj=ss_obj).order_by('-create_date')
+            else:
+                queryset = ServerTask.objects.filter(q_query,session_obj=ss_obj).order_by('-create_date')
+        # elif fsid:
+        #     fs_obj =  TaskSession.objects.filter(id=fsid)
+        #     ss_objs = fs_obj.values('task_secsession__id')
+        #     ssid_list = [t['task_secsession__id'] for t in ss_objs]
+        #     if st_status_id == '1':
+        #         queryset = ServerTask.objects.filter(q_query,status=1,secsession_obj_id__in=ssid_list).order_by('-create_date')
+        #     elif st_status_id == '2':
+        #         queryset = ServerTask.objects.filter(q_query,status=2,secsession_obj_id__in=ssid_list).order_by('-create_date')
+        #     elif st_status_id == '3':
+        #         queryset = ServerTask.objects.filter(q_query,status=3,secsession_obj_id__in=ssid_list).order_by('-create_date')
+        #     elif st_status_id == '4':
+        #         queryset = ServerTask.objects.filter(q_query,status=4,secsession_obj_id__in=ssid_list).order_by('-create_date')
+        #     elif st_status_id == '5':
+        #         queryset = ServerTask.objects.filter(q_query,status=5,secsession_obj_id__in=ssid_list).order_by('-create_date')
+        #     else:
+        #         queryset = ServerTask.objects.filter(q_query,secsession_obj_id__in=ssid_list).order_by('-create_date')
+        else:
+            queryset = ServerTask.objects.filter(q_query).order_by('-create_date')
+        # 权限处理
+        user_dict = request.session.get('is_login', None)
+        if not UserProfile.objects.get(name=user_dict['user']).is_admin:
+            queryset = queryset.filter(server_obj__business_unit__roles__userprofile__name=user_dict['user'])
+        # 加载组合筛选
+        if task_status:
+            queryset = queryset.filter(status=task_status)
+        # 加载分页器
+        task_list, page_html = init_paginaion(request, queryset)
+
+        return render(request,'server_task.html',locals())
+    elif request.method == "POST":
+        task_id = request.POST.get("task_id")
+        task_obj = ServerTask.objects.get(id=task_id)
+        t_res = task_obj.task_res
+        res = {'res':'task running......'}
+        if t_res:
+            import ast
+            res = ast.literal_eval(t_res)  # 字符串转换字典
+
+        return HttpResponse(json.dumps(res))
+
+def server_task_reload(request):
+    if request.method == "GET":
+        tid = request.GET.get("tid")
+
+        # fsid = request.GET.get("fsid","")
+        ssid = request.GET.get("ssid","")
+        sts_id = request.GET.get("sts_id","")
+        page = request.GET.get("page","")
+        server_id = request.GET.get("sid","")
+
+        try:
+            ServerTask.objects.filter(id=tid).update(status=1,finished_date=None)
+            result = {"code":0, "message":"任务恢复成功!"}
+        except Exception as e:
+            result = {"code": 1, "message": str(e)}
+        return HttpResponseRedirect('/task/server_task_status/{0}/{1}/{2}/'
+                                    '?status={3}&message={4}&page={5}'.
+                                    format(server_id,ssid,sts_id,
+                                           result.get("code", ""),
+                                           result.get("message", ""),
+                                           page,
+                                           ))
+
+def server_task_del(request):
+    if request.method == "GET":
+        tid = request.GET.get("tid")
+
+        # fsid = request.GET.get("fsid","")
+        ssid = request.GET.get("ssid","")
+        sts_id = request.GET.get("sts_id","")
+        page = request.GET.get("page","")
+        server_id = request.GET.get("sid","")
+
+        try:
+            ServerTask.objects.filter(id=tid).delete()
+            result = {"code":0, "message":"任务删除成功!"}
+        except Exception as e:
+            result = {"code": 1, "message": str(e)}
+        return HttpResponseRedirect('/task/server_task_status/{0}/{1}/{2}/'
+                                    '?status={3}&message={4}&page={5}'.
+                                    format(server_id,ssid,sts_id,
+                                           result.get("code", ""),
+                                           result.get("message", ""),
+                                           page,
+                                           ))
