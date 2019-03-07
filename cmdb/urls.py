@@ -27,9 +27,9 @@ urlpatterns = [
     url(r'^asset_update', views.asset_update),
     url(r'^asset_change_log', views.asset_change_log), #主机变更记录
     url(r'^asset_run_tasks', views.asset_run_tasks), #批量修改主机
-    url(r'^tag_add', views.tag_add),
-    url(r'^tag_del', views.tag_del),
-    url(r'^tag_edit', views.tag_edit),
+    url(r'^tag_add', views.tag_add),    #添加标签
+    url(r'^tag_del', views.tag_del),    #删除标签
+    url(r'^tag_edit', views.tag_edit),  #修改标签
 
     url(r'^ssd_list', views.ssd_list), #SSD列表
     url(r'^ssd_smartlog', views.ssd_smartlog), #SSD查看smart_log

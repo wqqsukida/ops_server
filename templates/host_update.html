@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:01 GMT -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>H+ 后台主题UI框架 - 数据表格</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link rel="shortcut icon" href="../static/favicon.ico">
+    <link href="/static/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+{#    <link href="/static/css/plugins/footable/footable.core.css" rel="stylesheet">#}
+    <link href="/static/css/font-awesome.min93e3.css" rel="stylesheet">
+    <link href="/static/css/animate.min.css" rel="stylesheet">
+    <link href="/static/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/css/gstyle.css" rel="stylesheet">
+    <!-- bootstrap-select -->
+    <link rel="stylesheet" href="/static/css/plugins/bootstrap-select/bootstrap-select.css">
+    <link rel="stylesheet" href="/static/css/plugins/double-bootstrap/doublebox-bootstrap.css">
+</head>
+
+<body class="gray-bg">
+    <!--通知消息处-->
+    {% if result  %}
+        {% if result.code == 0 %}
+            <div class="alert alert-success alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行成功:<strong>{{ result.message }}</strong>
+            </div>
+        {% elif result.code == 1 %}
+            <div class="alert alert-danger alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行失败:<strong>{{ result.message }}</strong>
+            </div>
+        {% elif result.code == 2 %}
+            <div class="alert alert-warning alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行错误:<strong>{{ result.message }}</strong>
+            </div>
+        {% endif %}
+    {% endif %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                              <li><a href="/index_v3"><span class="g_nav_font">首页</span></a></li>
+                              <li><a href="/firmware/version_update"><span class="g_nav_font">固件升级</span></a></li>
+                              <li class="active">升级主机设备</li>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a onclick="window.location.reload()">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </ol>
+                    </div>
+
+                    <div class="ibox-content ">
+                        <div class="panel-body">
+                            <form action="/firmware/host_update" method="post" class="input-box" role="form" novalidate>
+                                {% csrf_token %}
+                                <div class="form-group col-sm-12">
+                                    <div class="col-sm-3 control-label">
+                                        <h4 style="float:right;">升级版本：</h4>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <select class="form-control selectpicker" name="fw_ver" id="fw_ver"  data-live-search="true">
+                                            {% for fw in versions %}
+                                                <option value="{{ fw.id }}">{{ fw.version_name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-sm-12">
+                                    <div class="col-sm-3 control-label">
+                                        <h4 style="float:right;">固件类型：</h4>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <select class="form-control" name="img_type" id="img_type"  data-live-search="true">
+                                            {% for c in choices %}
+                                                <option value="{{ c.0 }}">{{ c.1 }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-sm-12">
+                                    <div class="col-sm-3 control-label">
+                                        <h4 style="float:right;">目标主机：</h4>
+                                    </div>
+                                    <div class="col-sm-7">
+                                        <select multiple="multiple" size="10" name="host_list" class="demo form-control">
+
+                                        </select>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-sm-12">
+                                    <div class="col-sm-6"> </div>
+                                    <button id="update_btn" type="submit" class="btn btn-primary js_confirm">提交</button>
+                                </div>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script src="/static/js/plugins/jeditable/jquery.jeditable.js"></script>
+    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+{#    <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>#}
+    <script src="/static/js/plugins/layer/layer.min.js"></script>
+    <!-- jQuery Validation plugin javascript-->
+    <script src="/static/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="/static/js/plugins/validate/messages_zh.min.js"></script>
+{#    <script src="/static/js/plugins/footable/footable.all.min.js"></script>#}
+    <!-- 自定义js -->
+    <script src="/static/js/plugins/bootstrap-select/bootstrap-select.js"></script>
+    <script src="/static/js/content.min.js?v=1.0.0"></script>
+    <script src="/static/js/plugins/double-bootstrap/doublebox-bootstrap.js"></script>
+
+    <script type="text/javascript">
+        var demo2;
+        $(function(){
+            var data_arr;
+            $.ajax({
+                url: "/cmdb/asset_list",
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                type: "post",
+                dataType: "json",
+                contentType: "application/json",
+                success: function (arg) {
+                    data_arr = arg;
+                    //console.log(data_arr);
+
+                    demo2 = $('.demo').doublebox({
+                        nonSelectedListLabel: '源菜单',
+                        selectedListLabel: '目标菜单',
+                        preserveSelectionOnMove: 'moved',
+                        moveOnSelect: false,
+                        nonSelectedList:data_arr,
+                        //selectedList:[{"roleId":"4","roleName":"zhangsan1"},{"roleId":"5","roleName":"lisi1"},{"roleId":"6","roleName":"wangwu1"}],
+                        optionValue:"id",
+                        optionText:"manage_ip",
+                        doubleMove:true,
+                    });
+                }
+            });
+
+        })
+
+    </script>
+
+</body>
+

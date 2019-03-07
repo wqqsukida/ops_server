@@ -81,6 +81,10 @@ class Nvme_ssd(object):
     def add_disk(self,val_dict):
         try:
             with transaction.atomic():
+                # 删除7天之外的SSD变更记录
+                limit_time = datetime.datetime.now() - datetime.timedelta(days=settings.SSD_RECORD)
+                models.ServerRecord.objects.filter(content__contains="SSD",create_at__lt=limit_time).delete()
+
                 record = "添加SSD:{0}至{1}".format(val_dict['node'],self.server_obj.manage_ip)
                 val_dict['server_obj'] = self.server_obj
                 smart_log = val_dict.pop('smart_log')

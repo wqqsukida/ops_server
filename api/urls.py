@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^server/$', views.ServerView.as_view()),
     # url(r'^task/$', views.task),
     url(r'^task/$', views.TaskView.as_view()),
+    url(r'^utask/$', views.UtaskView.as_view()),
 ]

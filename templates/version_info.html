@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:01 GMT -->
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>H+ 后台主题UI框架 - 数据表格</title>
+    <meta name="keywords" content="H+后台主题,后台bootstrap框架,会员中心主题,后台HTML,响应式后台">
+    <meta name="description" content="H+是一个完全响应式，基于Bootstrap3最新版本开发的扁平化主题，她采用了主流的左右两栏式布局，使用了Html5+CSS3等现代技术">
+
+    <link rel="shortcut icon" href="../static/favicon.ico">
+    <link href="/static/css/bootstrap.min14ed.css?v=3.3.6" rel="stylesheet">
+    <link href="/static/css/font-awesome.min93e3.css?v=4.4.0" rel="stylesheet">
+    <link href="/static/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
+
+    <!-- Data Tables -->
+    <link href="/static/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+{#    <link href="/static/css/plugins/footable/footable.core.css" rel="stylesheet">#}
+    <link href="/static/css/font-awesome.min93e3.css" rel="stylesheet">
+    <link href="/static/css/animate.min.css" rel="stylesheet">
+    <link href="/static/css/style.min862f.css?v=4.1.0" rel="stylesheet">
+    <link href="/static/css/gstyle.css" rel="stylesheet">
+
+    <link href="/static/css/plugins/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+</head>
+
+<body class="gray-bg">
+    <!--通知消息处-->
+    {% if result  %}
+        {% if result.code == 0 %}
+            <div class="alert alert-success alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行成功:<strong>{{ result.message }}</strong>
+            </div>
+        {% else %}
+            <div class="alert alert-danger alert-dismissable" style="text-align: center">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                执行失败:<strong>{{ result.message }}</strong>
+            </div>
+        {% endif %}
+    {% endif %}
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <ol class="breadcrumb">
+                            <h5><a href="/index_v3/">首页</a><B style="color:#ccc">/</B> 版本信息 </h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a onclick="window.location.reload()">
+                                    <i class="fa fa-refresh"></i>
+                                </a>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
+                        </ol>
+                    </div>
+
+                    <div class="ibox-content">
+                        <div id="toolbar">
+                            <a data-toggle="modal" data-target="#AddVerMod" class="btn  btn-info"><i class="fa fa-plus"></i> 添加版本</a>
+                            <a data-toggle="modal" data-target="#AddDevMod" class="btn  btn-info" id="add-dev-btn"><i class="fa fa-plus"></i> 添加产品类型</a>
+                            <a data-toggle="modal" data-target="#AddImgMod" class="btn  btn-info" id="add-img-btn"><i class="fa fa-plus"></i> 添加Image</a>
+                        </div>
+                        <table class="table" id="report"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="AddVerMod" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">添加版本</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/firmware/version_add"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">版本号：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="version_name" id=""
+                                       placeholder="">
+                            </div>
+                        </div>
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="AddDevMod" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">添加产品类型</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/firmware/dev_add"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">所属版本：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="version_id" id="get_version_">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">产品类型：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="device_name" id=""
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="AddImgMod" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">添加固件</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/firmware/img_add"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">所属版本：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="version_id" id="get_version">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">所属产品类型：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="device_id" id="get_device">
+
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">固件类型：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="image_type" id="get_image">
+
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">下载路径：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="download_url" id=""
+                                       placeholder="">
+                            </div>
+                        </div>
+
+                        <div class="form-group file-pretty" id="">
+                            <label class="col-sm-3 control-label">本地文件：</label>
+                            <div class="col-sm-8">
+                                <input type="file" class="form-control" name="image_file">
+                                <span class="help-block m-b-none">
+                                    <i class="fa fa-info-circle"></i>
+                                    <font color="#8b0000">添加本地文件至服务器（下载路径会自动生成）</font>
+                                </span>
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="EditVerModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">更新版本信息</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/firmware/version_edit"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group hide">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="id" id="mod_vid">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">版本名称：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="version_name" id="mod_vname"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+</div>
+
+    <div class="modal inmodal" id="EditDevModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">更新产品类型信息</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/firmware/dev_edit"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group hide">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="id" id="mod_did">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">产品类型：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="device_name" id="mod_dname"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal inmodal" id="EditImageModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">更新固件信息</h4>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal m-t" action="/firmware/img_edit"  role="form" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group hide">
+                            <label class="col-sm-3 control-label">ID：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="id" id="mod_id">
+                            </div>
+                        </div>
+                        <!--
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Image类型：</label>
+                            <div class="col-sm-8">
+                                <select class="form-control"  name="image_type" id="mod_type">
+
+                                </select>
+                            </div>
+                        </div>
+                        -->
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">下载路径：</label>
+                            <div class="col-sm-8">
+                                <input class="form-control" type="text"  name="download_url" id="mod_url"
+                                       placeholder="">
+                            </div>
+                        </div>
+
+                        <div class="form-group file-pretty" id="">
+                            <label class="col-sm-3 control-label">本地文件：</label>
+                            <div class="col-sm-8">
+                                <input type="file" class="form-control" name="image_file">
+                                <span class="help-block m-b-none">
+                                    <i class="fa fa-info-circle"></i>
+                                    <font color="#8b0000">选择本地文件会覆盖之前上传的image文件</font>
+                                </span>
+                            </div>
+                        </div>
+
+                        <hr width="100%" />
+                        <div class="col-sm-12">
+                            <div class="col-sm-5"> </div>
+                            <button type="submit" class="btn btn-primary js_confirm">提交</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- 全局js -->
+    <script src="/static/js/jquery.min.js?v=2.1.4"></script>
+    <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script src="/static/js/plugins/jeditable/jquery.jeditable.js"></script>
+    <script src="/static/js/plugins/dataTables/jquery.dataTables.js"></script>
+    <script src="/static/js/plugins/dataTables/dataTables.bootstrap.js"></script>
+{#    <script src="/static/js/plugins/sweetalert/sweetalert.min.js"></script>#}
+    <script src="/static/js/plugins/layer/layer.min.js"></script>
+    <!-- jQuery Validation plugin javascript-->
+    <script src="/static/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="/static/js/plugins/validate/messages_zh.min.js"></script>
+{#    <script src="/static/js/plugins/footable/footable.all.min.js"></script>#}
+    <!-- 自定义js -->
+    <script src="/static/js/content.min.js?v=1.0.0"></script>
+    <!-- bootstrap-table.min.js -->
+    <script src="/static/js/plugins/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/static/js/plugins/bootstrap-table/bootstrap-table-zh-CN.js"></script>
+    <script src="/static/js/plugins/loading/loading.js"></script>
+    <!-- Prettyfile -->
+    <script src="/static/js/plugins/prettyfile/bootstrap-prettyfile.js"></script>
+
+    <script>
+        $('.file-pretty input[type="file"]').prettyFile();
+    </script>
+    <script>
+     window.onload = myfun;
+     function myfun() {
+         $("#report").bootstrapTable({
+             url: '/firmware/version_info',
+             method: 'post',
+             detailView: true,//父子表
+             //sidePagination: "server",
+             toolbar:'#toolbar',
+             pagination: true,
+             pageSize: 10,
+             pageList: [10, 25],
+             columns: [
+                 //{checkbox:true},
+                 {
+                 field: 'id',
+                 title: 'ID',
+                 sortable: true,
+                 width:'5%',
+             },
+                 {
+                 field: 'version_name',
+                 title: '版本名称',
+                 class:'get-vname',
+                 sortable: true
+             },
+             {
+                 field: 'id',
+                 title:'操作',
+                 formatter: function(value, row, index){
+                    var a = '<a class="mod-ver-btn" vid='+row.id+' data-toggle="modal" data-target="#EditVerModal" style="font-size: 20px">' +
+                        '<i class="fa fa-cog"></i></a>'  ;
+                    var b = '<a class="del_confirm" href="/firmware/version_del?vid='+row.id+'" style="font-size: 20px;margin-left:15px">' +
+                        '<i class="fa fa-trash"></i></a>';
+                    return a + b
+                 }
+
+                 }
+             ],
+             //注册加载子表的事件。注意下这里的三个参数！
+             onExpandRow: function (index, row, $detail) {
+
+                 InitSubTable(index, row, $detail);
+             }
+         });
+     }
+
+     InitSubTable = function (index, row, $detail) {
+        var cur_table = $detail.html('<table></table>').find('table');
+        $(cur_table).bootstrapTable({
+            url:'/firmware/dev_list',
+            methods:'get',
+            detailView: true,//父子表
+            queryParams:{version_id:row.id},
+            columns:[
+                 //{checkbox:true},
+                 {
+                     field: 'id',
+                     title: 'ID',
+                     sortable: true,
+                     width:'5%',
+                     cellStyle:function (value,row,index) {
+                        return {css:{"background-color":""}}
+                     }
+                 },
+                 {
+                     field: 'device_name',
+                     title: '产品类型',
+                     sortable: true,
+                     class:'get-dname',
+                     cellStyle:function (value,row,index) {
+                        return {css:{"background-color":""}}
+                     }
+                 },
+                 {
+                     field: 'id',
+                     title:'操作',
+                     formatter: function(value, row, index){
+                        var a = '<a class="mod-dev-btn" did='+row.id+' data-toggle="modal" data-target="#EditDevModal" style="font-size: 20px">' +
+                            '<i class="fa fa-cog"></i></a>'  ;
+                        var b = '<a class="del_confirm" href="/firmware/dev_del?did='+row.id+'" style="font-size: 20px;margin-left:15px">' +
+                            '<i class="fa fa-trash"></i></a>';
+                        return a + b
+                     },
+                     cellStyle:function (value,row,index) {
+                        return {css:{"background-color":""}}
+                     }
+                 }
+
+             ],
+            onExpandRow: function (index, row, $detail) {
+                InitSecSubTable(index, row, $detail);
+                }
+        })
+     };
+
+    InitSecSubTable = function (index, row, $detail) {
+        var sec_table = $detail.html('<table></table>').find('table');
+        $(sec_table).bootstrapTable({
+            url:'/firmware/img_list',
+            methods:'get',
+            queryParams:{device_id:row.id},
+            columns:[
+                 //{checkbox:true},
+                 {
+                     field: 'id',
+                     title: 'ID',
+                     sortable: true,
+                     width:'5%',
+                     cellStyle:function(value,row,index){
+                        return {css:{"background-color":""}}
+                        }
+                 },
+                 {
+                     field: 'image_name',
+                     title: '固件类型',
+                     sortable: true,
+                     cellStyle:function(value,row,index){
+                        return {css:{"background-color":""}}
+                        }
+                 },
+
+                 {
+                     field: 'download_url',
+                     title: '下载地址',
+                     sortable: true,
+                     class:'get-url',
+                     cellStyle:function(value,row,index){
+                        return {css:{"background-color":""}}
+                        },
+                     formatter:function (value,row,index) {
+                         return '<a href="'+value+'">'+value+'</a>'
+                     }
+                 },
+                {
+                    field:'enabled',
+                    title:'固件状态',
+                    cellStyle:function(value,row,index){
+                        return {css:{"background-color":""}}
+                        },
+                    formatter:function (value,row,index) {
+                        if(row.enabled){
+                            //href="/firmware/image_enabled?imid='+row.id+'&enabled=0"
+                            return '<a title="点击禁用" class="image-enabled-btn" imid='+row.id+' enabled=0  style="font-size: 20px;color: greenyellow">' +
+                                '<i class="fa fa-check-circle-o"></i></a>'
+                        }else{
+                            //href="/firmware/image_enabled?imid='+row.id+'&enabled=1"
+                            return '<a title="点击启用" class="image-enabled-btn" imid='+row.id+' enabled=1  style="font-size: 20px;color: red">' +
+                                '<i class="fa fa-ban"></i></a>'
+                        }
+
+                    }
+                },
+                 {
+                     field: 'id',
+                     title:'操作',
+                     formatter: function(value, row, index){
+                        var a = '<a class="mod-image-btn" imid='+row.id+' data-toggle="modal" data-target="#EditImageModal" style="font-size: 20px">' +
+                            '<i class="fa fa-cog"></i></a>'  ;
+                        var b = '<a class="del_confirm" href="/firmware/img_del?imid='+row.id+'" style="font-size: 20px;margin-left:15px">' +
+                            '<i class="fa fa-trash"></i></a>';
+                        return a + b
+                     },
+                     cellStyle:function(value,row,index){
+                        return {css:{"background-color":""}}
+                        }
+                 }
+
+             ],
+
+        })
+     }
+
+    </script>
+
+
+    <script>
+        $("#add-dev-btn").click(function () {
+            $("#get_version_").empty();
+            $.bootstrapLoading.start({ loadingTips: "正在获取版本信息，请稍候..." });
+            $.ajax({
+                url:"/firmware/version_info",
+                type:"POST",
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                dataType:'JSON',
+                success:function (arg){
+                    console.log(arg);
+                    if(arg){
+                        $("#get_version_").append(
+                            "<option disabled selected='selected'>======选择版本======</option>"
+                        );
+                        $.each(arg,function (k,v) {
+                            //console.log(k);
+                            //console.log(v['id']);
+                            $("#get_version_").append(
+                                "<option value=" + v.id + ">"+ v.version_name +"</option>"
+                            )
+                        });
+                    }else{
+
+                    }
+                },
+                complete:function () {
+                    $.bootstrapLoading.end();
+                }
+            })
+        });
+
+
+        $("#add-img-btn").click(function () {
+            $("#get_version").empty();
+            $("#get_device").empty();
+            $("#get_image").empty();
+            $.bootstrapLoading.start({ loadingTips: "正在获取版本信息，请稍候..." });
+            $.ajax({
+                url:"/firmware/version_info",
+                type:"POST",
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                dataType:'JSON',
+                success:function (arg){
+                    console.log(arg);
+                    if(arg){
+                        $("#get_version").append(
+                            "<option disabled selected='selected'>======选择版本======</option>"
+                        );
+                        $.each(arg,function (k,v) {
+                            //console.log(k);
+                            //console.log(v['id']);
+                            $("#get_version").append(
+                                "<option value=" + v.id + ">"+ v.version_name +"</option>"
+                            )
+                        });
+                    }else{
+
+                    }
+                },
+                complete:function () {
+                    $.bootstrapLoading.end();
+                }
+            })
+        });
+
+        $('#get_version').on('change',function () {
+            var vid = $(this).val();
+            $("#get_device").empty();
+            $("#get_image").empty();
+            $.bootstrapLoading.start({ loadingTips: "正在获取产品类型信息，请稍候..." });
+            $.ajax({
+                url:"/firmware/dev_list",
+                type:"GET",
+                data:{version_id:vid},
+                dataType:'JSON',
+                success:function (arg){
+                    if(arg){
+                        $("#get_device").append(
+                            "<option disabled selected='selected'>======选择产品类型======</option>"
+                        );
+                        $.each(arg,function (k,v) {
+                            $("#get_device").append(
+                                "<option value=" + v.id + ">"+ v.device_name +"</option>"
+                            )
+                        });
+
+                    }else{
+
+                    }
+                },
+                complete:function () {
+                    $.bootstrapLoading.end();
+                }
+            })
+        });
+
+        $('#get_device').on('change',function () {
+            //image_list = ['boot','fwslot','drivecfg','55_drivecfg','cc_drivecfg','conner','fwloader'];
+            var did = $(this).val();
+            $("#get_image").empty();
+            $.bootstrapLoading.start({ loadingTips: "正在获取未添加固件，请稍候..." });
+            $.ajax({
+                url:"/firmware/img_list",
+                type:"POST",
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                data:{device_id:did},
+                dataType:'JSON',
+                success:function (arg){
+                    if(arg){
+                        $.each(arg,function (k,v) {
+                            $("#get_image").append("<option value=" + v[0] + ">"+ v[1] +"</option>");
+                        })
+                    }else{}
+                },
+                complete:function () {
+                    $.bootstrapLoading.end();
+                }
+            })
+        });
+
+        $("table").on("click",".mod-ver-btn",function () {
+           version_id = $(this).attr('vid');
+           version_name = $(this).parent().siblings('.get-vname').text().trim();
+           //console.log(version_name);
+           $("#mod_vname").val(version_name);
+           $("#mod_vid").val(version_id);
+        });
+
+        $("table").on("click",".mod-dev-btn",function () {
+           device_id = $(this).attr('did');
+           device_name = $(this).parent().siblings('.get-dname').text().trim();
+           //console.log(device_name);
+           $("#mod_dname").val(device_name);
+           $("#mod_did").val(device_id);
+        });
+
+        $("table").on("click",".mod-image-btn",function () {
+           image_id = $(this).attr('imid');
+           download_url = $(this).parent().siblings('.get-url').text().trim();
+           //console.log(download_url);
+           $("#mod_url").val(download_url);
+           $("#mod_id").val(image_id);
+        });
+
+
+        $("table").on("click",".image-enabled-btn",function () {
+            tag_a = $(this);
+            image_id = tag_a.attr('imid');
+            enabled = tag_a.attr('enabled');
+            $.bootstrapLoading.start({ loadingTips: "正在修改状态，请稍候..." });
+            $.ajax({
+                url:"/firmware/img_enabled",
+                type:"POST",
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                data:{image_id:image_id,enabled:enabled},
+                dataType:'JSON',
+                success:function (rep) {
+                    if(rep.code === 1 ){
+                        if(enabled === '0'){
+                            tag_a.attr('enabled',1);
+                            tag_a.children('i').attr('class','fa fa-ban');
+                            tag_a.css('color','red');
+                            tag_a.attr('title','点击启用')
+                        }
+                        else if(enabled === '1'){
+                            tag_a.attr('enabled',0);
+                            tag_a.children('i').attr('class','fa fa-check-circle-o');
+                            tag_a.css('color','greenyellow');
+                            tag_a.attr('title','点击禁用')
+                        }
+                    }else {}
+                },
+                complete:function () {$.bootstrapLoading.end();}
+            })
+        })
+    </script>
+    <script>
+        //$('.del_confirm').click(function(){
+          //  return confirm("确认要执行删除操作吗？");
+        //});
+
+        $('table').on('click','.del_confirm',function () {
+            return confirm("确认要执行删除操作吗？");
+        });
+        $('.js_confirm').click(function(){
+            return confirm("确认执行操作吗？");
+        });
+    </script>
+
+
+</body>
+
+
+<!-- Mirrored from www.zi-han.net/theme/hplus/table_data_tables.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Jan 2016 14:20:02 GMT -->
+</html>

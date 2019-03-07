@@ -16,13 +16,17 @@ Including another URLconf
 from django.conf.urls import url,include
 from django.contrib import admin
 from cmdb import views
+from utils import get_code_img
 
 urlpatterns = [
     # url(r'^admin/', admin.site.urls),
     url(r'^api/', include("api.urls")),
     url(r'^cmdb/', include("cmdb.urls")),
     url(r'^rbac/', include("rbac.urls")),
+    url(r'^firmware/', include("firmware.urls")),
+    url(r'^task/', include("task.urls")),
     url(r'^login/', views.login),
+    url(r'^get_code/', get_code_img.get_code),
     url(r'^logout/', views.logout),
     url(r'^index/', views.index),
     url(r'^index_v3/', views.index_v3),

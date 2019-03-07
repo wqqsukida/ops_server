@@ -3,7 +3,8 @@
 # Author  : wuyifei
 # Data    : 10/10/18 10:18 AM
 # FileName: ansible_api.py
-
+from django.conf import settings
+import os
 import json
 import datetime
 from collections import namedtuple
@@ -155,7 +156,9 @@ class Runner(object):
 
     def run_playbook(self,extra_vars=None):
         if extra_vars: self.variable_manager.extra_vars = extra_vars
-        playbook = PlaybookExecutor(playbooks=['/home/wuyifei/ops_pro/ops_server/utils/playbooks/client_update.yml'],
+        playbook = PlaybookExecutor(
+            # playbooks=[os.path.join(settings.BASE_DIR,'utils/playbooks/client_update.yml')],
+            playbooks=['/home/wuyifei/ops_pro/ops_server/utils/playbooks/client_update.yml'],
                                     inventory=self.inventory,
                                     variable_manager=self.variable_manager,
                                     loader=self.loader,
@@ -187,9 +190,9 @@ class Runner(object):
             self.result_raw['status'][host] = result._result
 
         return json.dumps(self.result_raw,indent=4)
-
+#10.0.4.28,10.0.4.100,10.0.4.142,
 if __name__ == "__main__":
-    c = Runner('10.0.4.193,'
+    c = Runner('10.0.4.169,'
                #'10.0.25.52,10.0.25.53,10.0.25.51,10.0.25.55'
 )   # ['/etc/ansible/hosts'] or '172.17.0.2,172.17.0.3'
     # c.run_ad_hoc()

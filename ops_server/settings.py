@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'cmdb.apps.CmdbConfig',
     'rbac.apps.RbacConfig',
+    'firmware.apps.FirmwareConfig',
+    'task.apps.TaskConfig',
     'rest_framework',
     'django_crontab',
 ]
@@ -133,12 +135,14 @@ STATIC_URL = '/static/'
 #     os.path.join(BASE_DIR, 'static'),
 # )
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
+SERVER_IP = '10.0.2.20'
 ############################ 权限管理相关 ################################
 PERMISSION_MENU_KEY = "%&^%hdgddadsa&^ddadasd"
 PERMISSION_URL_DICT_KEY = "lgdjfsjsgvsctewtg"
 # 不用登陆可访问页面
 VALID_URL= [
     '^/login/',
+    '^/get_code/',
     # '^/index/',
     # '^/index_v3/',
     '^/403/',
@@ -146,8 +150,11 @@ VALID_URL= [
     '^/api/server/',
     '^/api/task/',
     '^/api/stask/',
+    '^/api/utask/',
     '^/api/file/',
     '^/api/test/',
+    '^/firmware/image_download/',
+    '^/task/taskscript_download/',
     # '^/cmdb/asset_list/',
 ]
 
@@ -165,7 +172,7 @@ PLUGIN_ITEMS = {
 ##################### Nvme Settings ###################################
 
 SMART_LOG_LIMIT_TIME = 0.1    #数据库保留smart_log天数
-
+SSD_RECORD = 7  # SSD相关记录保存最大天数
 
 ##################### 分页器设置 ########################################
 

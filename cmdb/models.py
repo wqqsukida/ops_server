@@ -90,13 +90,13 @@ class Server(models.Model):
     latest_date = models.DateTimeField(null=True,blank=True)
     client_version = models.CharField('客户端版本',max_length=32,null=True,blank=True)
     def run_task_count(self):
-        return self.server_task.filter(status=5).count()
+        return self.server_task.name
 
     class Meta:
         verbose_name_plural = "服务器表"
 
     def __str__(self):
-        return self.hostname
+        return self.manage_ip
 
 
 
@@ -122,7 +122,7 @@ class Nvme_ssd(models.Model):
     Nvme_ssd
     """
     node = models.CharField('',max_length=64)
-    sn = models.CharField('SN号', max_length=128, db_index=True,null=True)
+    sn = models.CharField('SN号', max_length=128,null=True,unique=True)
     model = models.CharField('SSD型号', max_length=256,null=True)
     namespace = models.CharField('', max_length=32,null=True)
     usage = models.CharField('使用情况', max_length=128,null=True)
@@ -232,11 +232,11 @@ class ServerRecord(models.Model):
     def __str__(self):
         return self.server_obj.hostname
 
-class Task(models.Model):
+class FocusTask(models.Model):
     '''
 
     '''
-    server_obj = models.OneToOneField(to='Server',related_name='server_task')
+    server_obj = models.OneToOneField(to='Server',related_name='server_focus_task')
     name = models.CharField('任务名',max_length=64,null=True,blank=True)
     args = models.CharField('任务参数',max_length=128,null=True,blank=True)
     path = models.CharField('路径',max_length=256,null=True,blank=True)

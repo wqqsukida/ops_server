@@ -153,6 +153,7 @@
                                         <option value="3">修改主机状态</option>
 {#                                        <option value="4">执行主机任务</option>#}
 {#                                        <option value="5">下发任务脚本</option>#}
+                                        <option value="6">批量删除主机</option>
                                     </select>
                                 </div>
 
@@ -277,13 +278,13 @@
                                             <td>{{ asset.cpu_model }}</td>
                                             <td>
                                                 {% if asset.server_status_id == 1 %}
-                                                    <a class="btn-sm btn-success">{{ asset.get_server_status_id_display }}</a>
+                                                    <a class="btn btn-sm btn-success">{{ asset.get_server_status_id_display }}</a>
                                                 {% elif asset.server_status_id == 2 %}
-                                                    <a class="btn-sm btn-info">{{ asset.get_server_status_id_display }}</a>
+                                                    <a class="btn btn-sm btn-info">{{ asset.get_server_status_id_display }}</a>
                                                 {% elif asset.server_status_id == 3 %}
-                                                    <a class="btn-sm btn-danger">{{ asset.get_server_status_id_display }}</a>
+                                                    <a class="btn btn-sm btn-danger">{{ asset.get_server_status_id_display }}</a>
                                                 {% elif asset.server_status_id == 4 %}
-                                                    <a class="btn-sm btn-warning">{{ asset.get_server_status_id_display }}</a>
+                                                    <a class="btn btn-sm btn-warning">{{ asset.get_server_status_id_display }}</a>
                                                 {% endif %}
                                             </td>
 
@@ -857,6 +858,7 @@
                 +
                 '                                        {% endfor %}\n' +
             '                                    </select>';
+        el6 = '<input class="hide" type="text" name="del_hosts" value="True">';
 
         $("#chose-action").on('change',function () {
             $("#add-action").empty();
@@ -877,6 +879,9 @@
             }
             else if($(this).val() == 5){
                 $("#add-action").append(el5);
+            }
+            else if($(this).val() == 6){
+                $("#add-action").append(el6);
             }
         }
         )
