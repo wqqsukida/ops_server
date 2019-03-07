@@ -82,7 +82,13 @@
                                     </a>
                                 </div>
 
-                                <div class="col-sm-7"></div>
+                                <div class="col-sm-1">
+                                    <a data-toggle="modal" data-target="#TaskScriptModal" type="button" class="btn btn-success">
+                                        <i class="fa fa-cogs"></i> 管理任务脚本
+                                    </a>
+                                </div>
+
+                                <div class="col-sm-6"></div>
                                 <div class="col-sm-2 ">
                                     <input type="text" name="q"  class="form-control"  placeholder="" />
                                 </div>
@@ -99,6 +105,7 @@
                                  <thead>
                                     <tr>
                                         <th>模板名称</th>
+                                        <th>脚本名称</th>
                                         <th>脚本内容</th>
                                         <th>执行路径</th>
                                         <th>执行参数</th>
@@ -111,6 +118,7 @@
                                     {% for task in task_list %}
                                         <tr>
                                             <td>{{ task.title }}</td>
+                                            <td>{{ task.task_script.name }}</td>
                                             <td style="font-size: 20px">
                                                 <a class="btn btn-success get_script_content" data-toggle="modal" data-target="#TaskModal" tm_id={{ task.id }} >
                                                     Get_Script_Content...
@@ -357,7 +365,7 @@
                     <h4 class="modal-title" id="myModalLabel">上传任务脚本</h4>
                 </div>
                 <div class="panel-body">
-                    <form class="form-horizontal m-t" id="signupForm" action="/task/server_taskmethod_upload" role="form" method="post" enctype="multipart/form-data">
+                    <form class="form-horizontal m-t" id="signupForm" action="/task/server_taskscript_upload" role="form" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
                         <div class="form-group" id="file-pretty">
@@ -383,8 +391,8 @@
     </div>
 
     <div class="modal inmodal" id="TaskModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
                 <div class="modal-header">
                     <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
                     <h4 class="modal-title" id="TaskModalLabel"></h4>
@@ -397,6 +405,45 @@
             </div>
         </div>
     </div>
+
+    <div class="modal inmodal" id="TaskScriptModal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content animated bounceInRight">
+                <div class="modal-header">
+                    <button type="button" class="close close_monitor_modal" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">任务脚本列表</h4>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-striped table-bordered table-hover dataTables-example" data-page-size="5">
+                        <thead>
+                            <tr>
+                                <th>name</th>
+                                <th>script_path</th>
+                                <th>download_url</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for task_script in script_query %}
+                                <tr tid="{{ task_script.id }}">
+                                    <td>{{ task_script.name }}</td>
+                                    <td>{{ task_script.script_path }}</td>
+                                    <td>{{ task_script.download_url }}</td>
+                                    <td style="font-size: 20px">
+                                        <a class="del_confirm taskscript_del" tid="{{ task_script.id }}" style="margin-right: 15px" title="删除任务脚本" >
+                                            <i class="fa fa-trash-o"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 全局js -->
     <script src="/static/js/jquery.min.js?v=2.1.4"></script>
     <script src="/static/js/bootstrap.min.js?v=3.3.6"></script>
@@ -569,6 +616,24 @@
                 $("#mod_file_url").val("");
                 $(".file-url-div2").addClass("hide")
             }
+        });
+
+        $("#TaskScriptModal table ").on("click",".taskscript_del",function () {
+            tid = $(this).attr('tid');
+            $.ajax({
+                url:'/task/server_taskscript_del',
+                type:'POST',
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                data:{tid:tid},
+                dataType:'JSON',
+                success:function (arg) {
+                    if(arg.status){
+                        $("#TaskScriptModal table tbody tr[tid="+tid+"]").remove()
+                    }else{
+                        alert(arg.msg)
+                    }
+                }
+            })
         })
     </script>
 

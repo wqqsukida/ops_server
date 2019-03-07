@@ -141,7 +141,7 @@ def server_taskmethod_del(request):
                                     format(result.get("code", ""),
                                            result.get("message", "")))
 
-def server_taskmethod_upload(request):
+def server_taskscript_upload(request):
     if request.method == "POST" :
         file_obj = request.FILES.get('task_script')
 
@@ -181,6 +181,22 @@ def server_taskscript_download(request):
         except Exception as e:
             print(traceback.format_exc())
             return HttpResponse('DownLoad Error!(%s)'%str(e))
+
+def server_taskscript_del(request):
+    if request.method == "POST":
+        tid = request.POST.get("tid")
+        res = {'status':None,'msg':''}
+        try:
+            ts_obj = TaskScript.objects.get(id=tid)
+            if os.path.exists(ts_obj.script_path):
+                os.remove(ts_obj.script_path)
+            ts_obj.delete()
+            res['status'] = True
+        except Exception as e:
+            res['status'] = False
+            res['msg'] = str(e)
+        return HttpResponse(json.dumps(res))
+
 #==========任务会话视图=============
 def server_task_session(request):
     '''
