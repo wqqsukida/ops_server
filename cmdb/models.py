@@ -240,6 +240,6 @@ class FocusTask(models.Model):
     name = models.CharField('任务名',max_length=64,null=True,blank=True)
     args = models.CharField('任务参数',max_length=128,null=True,blank=True)
     path = models.CharField('路径',max_length=256,null=True,blank=True)
-    status = models.IntegerField('任务状态',default='0',null=True,blank=True)
+    status = models.CharField('任务状态',max_length=32,null=True,blank=True)
     msg = models.TextField('任务信息',null=True,blank=True)
     elapsed = models.CharField('执行时间',max_length=32,null=True,blank=True)
