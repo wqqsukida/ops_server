@@ -14,6 +14,6 @@ def refresh_server():
     query_list = Server.objects.filter(
         Q(Q(latest_date=None) | Q(latest_date__lt=start)) & Q(server_status_id=2)
     )
-    host_list = list(query_list.values('hostname'))
+    ip_list = list(query_list.values('manage_ip'))
     query_list.update(server_status_id=3)
-    print('30min not send host:%s' % host_list)
+    print('30min not send host:%s' % ip_list)

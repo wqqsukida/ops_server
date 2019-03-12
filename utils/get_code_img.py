@@ -7,8 +7,9 @@ from django.shortcuts import HttpResponse
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import random
+from django.conf import settings
 
-def get_code(request,width=120, height=30,font_file='/usr/share/fonts/wqy-microhei/wqy-microhei.ttc', font_size=26):
+def get_code(request,width=120, height=30,font_file=settings.CODE_FONT_FILE, font_size=26):
     def rndColor():
         """
         生成随机颜色

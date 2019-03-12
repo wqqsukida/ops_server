@@ -135,7 +135,9 @@ STATIC_URL = '/static/'
 #     os.path.join(BASE_DIR, 'static'),
 # )
 STATIC_ROOT = os.path.join(BASE_DIR,'static')
+###############################其它设置##################################
 SERVER_IP = '10.0.2.20'
+CODE_FONT_FILE = '/usr/share/fonts/wqy-microhei/wqy-microhei.ttc'
 ############################ 权限管理相关 ################################
 PERMISSION_MENU_KEY = "%&^%hdgddadsa&^ddadasd"
 PERMISSION_URL_DICT_KEY = "lgdjfsjsgvsctewtg"

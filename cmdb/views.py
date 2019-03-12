@@ -8,6 +8,7 @@ import json
 import random
 import datetime
 import os
+import tablib
 from utils.md5 import encrypt
 from django.forms import Form,fields,widgets
 from .models import *
@@ -273,6 +274,30 @@ def asset_list(request):
         idc_list = IDC.objects.all()
         tag_list = Tag.objects.all()
         business_list = BusinessUnit.objects.all()
+        #导出表格
+        export = request.GET.get("export")
+        if export:
+            if export == "xlsx":
+                headers = ('id','cert_id','comment','idc_id','cabinet_num','cabinet_order',
+                           'server_status_id','host_name','nickname','sn','manufacturer','model',
+                           'manage_ip','os_platform','os_version','cpu_count','cpu_physical_count',
+                           'cpu_model','create_at','latest_date','client_version')
+                data = list(queryset.values_list())
+            else:
+                return HttpResponseRedirect('/403/')
+            try:
+                data = tablib.Dataset(*data, headers=headers)
+            except Exception as e:
+                result = {"code": 1, "message": "导出失败：{0}".format(str(e))}
+                return HttpResponseRedirect('/cmdb/asset_list?status={0}&message={1}&page={2}'.
+                                            format(result.get("code", ""),
+                                                   result.get("message", ""),
+                                                   page))
+
+            response = HttpResponse(data.xlsx)
+            response['Content-type'] = 'application/octet-stream'
+            response["Content-Disposition"] = "attachment;filename=machines.xlsx;"
+            return response
         # 加载分页器
         queryset, page_html = init_paginaion(request, queryset)
 
