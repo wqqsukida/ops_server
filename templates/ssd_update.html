@@ -28,11 +28,12 @@
     <!-- bootstrap-select -->
     <link rel="stylesheet" href="/static/css/plugins/bootstrap-select/bootstrap-select.css">
     <link rel="stylesheet" href="/static/css/plugins/double-bootstrap/doublebox-bootstrap.css">
-
+    <link href="/static/css/plugins/toastr/toastr.min.css" rel="stylesheet">
 </head>
 
 <body class="gray-bg">
     <!--通知消息处-->
+    <!--
     {% if result  %}
         {% if result.code == 0 %}
             <div class="alert alert-success alert-dismissable" style="text-align: center">
@@ -57,6 +58,7 @@
             </div>
         {% endif %}
     {% endif %}
+    -->
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-sm-12">
@@ -82,7 +84,7 @@
 
                     <div class="ibox-content ">
                         <div class="panel-body">
-                            <form action="/firmware/ssd_update" method="post" class="input-box" role="form" novalidate>
+                            <form   class="input-box" role="form" novalidate>
                                 {% csrf_token %}
                                 <div class="form-group col-sm-12">
                                     <div class="col-sm-3 control-label">
@@ -152,7 +154,7 @@
 
                                 <div class="col-sm-12">
                                     <div class="col-sm-6"> </div>
-                                    <button id="update_btn" type="submit" class="btn btn-primary js_confirm">提交</button>
+                                    <div id="update_btn"  class="btn btn-primary">提交</div>
                                 </div>
                             </form>
                         </div>
@@ -180,9 +182,50 @@
     <script src="/static/js/plugins/bootstrap-select/bootstrap-select.js"></script>
     <script src="/static/js/content.min.js?v=1.0.0"></script>
     <script src="/static/js/plugins/double-bootstrap/doublebox-bootstrap.js"></script>
+    <!-- Toastr script -->
+    <script src="/static/js/plugins/toastr/toastr.min.js"></script>
 
     <script>
+        $(function(){
+            toastr.options = {
+                //参数设置，若用默认值可以省略以下面代
+                "closeButton": true, //是否显示关闭按钮
+                "debug": false, //是否使用debug模式
+                "positionClass": "toast-top-full-width",//弹出窗的位置
+                "showDuration": "300",//显示的动画时间
+                "hideDuration": "1000",//消失的动画时间
+                "timeOut": "10000", //展现时间
+                "extendedTimeOut": "1000",//加长展示时间
+                "showEasing": "swing",//显示时的动画缓冲方式
+                "hideEasing": "linear",//消失时的动画缓冲方式
+                "showMethod": "fadeIn",//显示时的动画方式
+                "hideMethod": "fadeOut" //消失时的动画方式
+            };})
 
+    </script>
+
+    <script>
+        $("#update_btn").click(function () {
+            click_status = confirm("确认要执行操作吗？");
+            if(!click_status){return false}
+            $.ajax({
+                url: "/firmware/ssd_update",
+                headers:{"X-CSRFToken": $.cookie('csrftoken')},
+                type: "POST",
+                data:$(".input-box").serialize(),
+                dataType: "JSON",
+                success:function (arg) {
+                    //console.log(arg);
+                    if(arg.code == 0){
+                        toastr.success(arg.message)
+                    }else if(arg.code == 1){
+                        toastr.error(arg.message)
+                    }else if(arg.code == 2){
+                        toastr.warning(arg.message)
+                    }
+                }
+            })
+        })
     </script>
 
     <script type="text/javascript">
@@ -197,7 +240,7 @@
                 contentType: "application/json",
                 success: function (arg) {
                     data_arr = arg;
-                    console.log(data_arr);
+                    //console.log(data_arr);
 
                     demo2 = $('.demo').doublebox({
                         nonSelectedListLabel: '源菜单',

@@ -572,7 +572,7 @@ def ssd_list(request):
 
     elif request.method == "POST":
         query_set = Nvme_ssd.objects.all()
-        ssd_list = [{'id':q.id,'ssd':'{0}-{1}-{2}-{3}-{4}'.format(q.server_obj.manage_ip,q.node,q.sn,q.model.split('-')[1],q.fw_rev)}
+        ssd_list = [{'id':q.id,'ssd':'{0}-{1}-{2}-[{3}]-{4}'.format(q.server_obj.manage_ip,q.node,q.sn,q.model,q.fw_rev)}
                     for q in query_set]
         return HttpResponse(json.dumps(ssd_list))
 

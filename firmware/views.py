@@ -315,10 +315,10 @@ def version_update(request):
 
 def ssd_update(request):
     if request.method == "GET":
-        status = request.GET.get("status", "")
-        message = request.GET.get("message", "")
-        if status.isdigit():
-            result = {"code":int(status),"message":message}
+        # status = request.GET.get("status", "")
+        # message = request.GET.get("message", "")
+        # if status.isdigit():
+        #     result = {"code":int(status),"message":message}
 
         versions = FirmWareVerison.objects.all()
         choices = Image.image_type_choices
@@ -334,10 +334,10 @@ def ssd_update(request):
                 res_msg = []
                 for sid in ssd_list:
                     ssd_obj = Nvme_ssd.objects.get(id=sid)
-                    ssd_model = ssd_obj.model.split('-')[1]
+                    ssd_model = ssd_obj.model#.split('-')[1]
                     img_obj = Image.objects.filter(
                         device__version_id=ver_id,
-                        device__device_name=ssd_model,
+                        device__device_name__lte=ssd_model,
                         image_type=img_type_id,
                         enabled=1
                     ).first()
@@ -354,17 +354,18 @@ def ssd_update(request):
         else:
             result = {"code": 1, "message": "请至少选择一个要升级的设备！"}
 
-        return HttpResponseRedirect('/firmware/ssd_update?status={0}&message={1}'.
-                            format(result.get("code", ""),
-                                   result.get("message", ""),
-                                ))
+        return HttpResponse(json.dumps(result))
+        # return HttpResponseRedirect('/firmware/ssd_update?status={0}&message={1}'.
+        #                     format(result.get("code", ""),
+        #                            result.get("message", ""),
+        #                         ))
 
 def host_update(request):
     if request.method == "GET":
-        status = request.GET.get("status", "")
-        message = request.GET.get("message", "")
-        if status.isdigit():
-            result = {"code":int(status),"message":message}
+        # status = request.GET.get("status", "")
+        # message = request.GET.get("message", "")
+        # if status.isdigit():
+        #     result = {"code":int(status),"message":message}
 
         versions = FirmWareVerison.objects.all()
         choices = Image.image_type_choices
@@ -382,12 +383,12 @@ def host_update(request):
                     server_obj = Server.objects.get(id=hid)
                     server_ssds_query = Nvme_ssd.objects.filter(server_obj=server_obj)
                     for ssd_obj in server_ssds_query:
-                        ssd_model = ssd_obj.model.split('-')[1]
+                        ssd_model = ssd_obj.model#.split('-')[1]
                         # ver_obj = FirmWareVerison.objects.get(id=ver_id)
                         # dev_obj = Device.objects.filter(version=ver_id,device_name=ssd_model).first()
                         img_obj = Image.objects.filter(
                             device__version_id=ver_id,
-                            device__device_name=ssd_model,
+                            device__device_name__lte=ssd_model,
                             image_type=img_type_id,
                             enabled=1,
                         ).first()
@@ -407,10 +408,11 @@ def host_update(request):
         else:
             result = {"code": 1, "message": "请至少选择一个要升级设备的主机！"}
 
-        return HttpResponseRedirect('/firmware/host_update?status={0}&message={1}'.
-                            format(result.get("code", ""),
-                                   result.get("message", ""),
-                                ))
+        return HttpResponse(json.dumps(result))
+        # return HttpResponseRedirect('/firmware/host_update?status={0}&message={1}'.
+        #                     format(result.get("code", ""),
+        #                            result.get("message", ""),
+        #                         ))
 
 def update_history(request):
     if request.method == "GET":
