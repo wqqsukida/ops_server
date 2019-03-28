@@ -162,9 +162,9 @@ class TaskView(APIAuthView):
         s_obj = models.Server.objects.filter(cert_id=res.get('cert_id')).first()
         #即时返回当前主机执行任务的状态，更新到task表
         models.FocusTask.objects.update_or_create(server_obj=s_obj,defaults=stask_res)
-        #如果返回存在stask_id且状态0,3的任务，更新servertask表
+        #如果返回存在stask_id且状态0,2,3的任务，更新servertask表
         if stask_id:
-            if stask_res.get('status') == '0':
+            if stask_res.get('status') == '0':  # 客戶端的0:IDLE判定爲服務端的2:FINISH
                 status_code = 2
             else :
                 status_code = stask_res.get('status')

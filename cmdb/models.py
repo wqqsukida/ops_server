@@ -125,7 +125,7 @@ class Nvme_ssd(models.Model):
     sn = models.CharField('SN号', max_length=128,null=True,unique=True)
     model = models.CharField('SSD型号', max_length=256,null=True)
     namespace = models.CharField('', max_length=32,null=True)
-    usage = models.CharField('使用情况', max_length=128,null=True)
+    capacity = models.CharField('設備容量', max_length=128,null=True)
     format = models.CharField('', max_length=128,null=True)
     fw_rev = models.CharField('', max_length=64,null=True)
     server_obj = models.ForeignKey('Server', related_name='nvme_ssd')

@@ -127,13 +127,13 @@
                                             </td>
                                             <td>
                                                 {% if h.server_status_id == 1 %}
-                                                    <a class="btn-sm btn-success">{{ h.get_server_status_id_display }}</a>
+                                                    <a class="btn btn-sm btn-success">{{ h.get_server_status_id_display }}</a>
                                                 {% elif h.server_status_id == 2 %}
-                                                    <a class="btn-sm btn-info">{{ h.get_server_status_id_display }}</a>
+                                                    <a class="btn btn-sm btn-info">{{ h.get_server_status_id_display }}</a>
                                                 {% elif h.server_status_id == 3 %}
-                                                    <a class="btn-sm btn-danger">{{ h.get_server_status_id_display }}</a>
+                                                    <a class="btn btn-sm btn-danger">{{ h.get_server_status_id_display }}</a>
                                                 {% elif h.server_status_id == 4 %}
-                                                    <a class="btn-sm btn-warning">{{ h.get_server_status_id_display }}</a>
+                                                    <a class="btn btn-sm btn-warning">{{ h.get_server_status_id_display }}</a>
                                                 {% endif %}
                                             </td>
                                             <td>{{ h.server_focus_task.name }}</td>
