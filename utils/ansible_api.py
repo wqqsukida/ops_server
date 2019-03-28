@@ -157,8 +157,8 @@ class Runner(object):
     def run_playbook(self,extra_vars=None):
         if extra_vars: self.variable_manager.extra_vars = extra_vars
         playbook = PlaybookExecutor(
-            # playbooks=[os.path.join(settings.BASE_DIR,'utils/playbooks/client_update.yml')],
-            playbooks=['/home/wuyifei/ops_pro/ops_server/utils/playbooks/client_update.yml'],
+            playbooks=[os.path.join(settings.BASE_DIR,'utils/playbooks/client_update.yml')],
+            # playbooks=['/home/wuyifei/ops_pro/ops_server/utils/playbooks/client_update.yml'],
                                     inventory=self.inventory,
                                     variable_manager=self.variable_manager,
                                     loader=self.loader,
