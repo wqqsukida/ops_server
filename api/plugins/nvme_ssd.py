@@ -26,7 +26,7 @@ class Nvme_ssd(object):
         ]
         """
         new_ssd_set = set(new_ssd_info_dict.keys())
-        old_ssd_set = {obj.node for obj in new_ssd_info_list}
+        old_ssd_set = {obj.sn for obj in new_ssd_info_list}
         # add_slot_list = new_disk_slot_set - old_disk_slot_set
         add_ssd_list = new_ssd_set.difference(old_ssd_set)
         del_ssd_list = old_ssd_set.difference(new_ssd_set)
@@ -35,8 +35,8 @@ class Nvme_ssd(object):
         # add_record_list = []
         # 增加 [2,5]
         if add_ssd_list:
-            for node in add_ssd_list:
-                value = new_ssd_info_dict[node]
+            for sn in add_ssd_list:
+                value = new_ssd_info_dict[sn]
                 self.add_disk(value)
         # for slot in add_slot_list:
         #     value = new_disk_info_dict[slot]
@@ -51,8 +51,8 @@ class Nvme_ssd(object):
 
         # 更新 [7,8]
         if update_ssd_list:
-            for node in update_ssd_list:
-                value = new_ssd_info_dict[node]
+            for sn in update_ssd_list:
+                value = new_ssd_info_dict[sn]
                 self.update_disk(value)
         # for slot in update_slot_list:
         #     value = new_disk_info_dict[
@@ -85,7 +85,7 @@ class Nvme_ssd(object):
                 limit_time = datetime.datetime.now() - datetime.timedelta(days=settings.SSD_RECORD)
                 models.ServerRecord.objects.filter(content__contains="SSD",create_at__lt=limit_time).delete()
 
-                record = "添加SSD:{0}至{1}".format(val_dict['node'],self.server_obj.manage_ip)
+                record = "添加SSD:{0}至{1}".format(val_dict['sn'],self.server_obj.manage_ip)
                 val_dict['server_obj'] = self.server_obj
                 smart_log = val_dict.pop('smart_log')
                 ssd_obj = models.Nvme_ssd.objects.create(**val_dict)
@@ -97,6 +97,13 @@ class Nvme_ssd(object):
                     self.add_smart_log(smart_log, ssd_obj)
 
         except Exception as e:
+            with transaction.atomic():
+                exist_ssd_obj = models.Nvme_ssd.objects.get(sn=val_dict['sn'])
+                if exist_ssd_obj and exist_ssd_obj.server_obj != self.server_obj:exist_ssd_obj.delete()
+                record = "存在重複sn,删除SSD:{0}从{1}".format(exist_ssd_obj.sn, exist_ssd_obj.server_obj.manage_ip)
+                models.ServerRecord.objects.create(server_obj=self.server_obj,
+                                                   content=record,
+                                                   creator=self.u_obj)
             print(e)
 
     def del_disk(self,del_ssd_list):
@@ -104,7 +111,7 @@ class Nvme_ssd(object):
             with transaction.atomic():
                 record = "删除SSD:{0}从{1}".format(del_ssd_list,self.server_obj.manage_ip)
                 models.Nvme_ssd.objects.filter(server_obj=self.server_obj,
-                                           node__in=del_ssd_list).delete()
+                                           sn__in=del_ssd_list).delete()
 
                 models.ServerRecord.objects.create(server_obj=self.server_obj,
                                                    content=record,
@@ -115,7 +122,7 @@ class Nvme_ssd(object):
     def update_disk(self,val_dict):
         # {'slot': '0', 'pd_type': 'SAS', 'capacity': '279.396', 'model': 'SEAGATE ST300MM0006     LS08S0K2B5NV'}
         obj = models.Nvme_ssd.objects.filter(server_obj=self.server_obj,
-                                         node=val_dict['node']).first()
+                                         sn=val_dict['sn']).first()
         smart_log = val_dict.pop('smart_log')
         # 添加smart_log
         if smart_log:
@@ -131,7 +138,7 @@ class Nvme_ssd(object):
 
                     if old_val != new_val:
                         record = "[%s]:[%s]的[%s]由[%s]变更为[%s]" % (self.server_obj.manage_ip,
-                                                                 val_dict['node'],k, old_val,
+                                                                 val_dict['sn'],k, old_val,
                                                                  new_val)
                         record_list.append(record)
                         setattr(obj, k, new_val)
