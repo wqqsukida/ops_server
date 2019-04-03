@@ -34,3 +34,5 @@ urlpatterns = [
     url(r'^$', views.index),
 
 ]
+
+handler404 = views.page_not_found

@@ -56,7 +56,7 @@ class Server(models.Model):
     cabinet_num = models.CharField('机柜号', max_length=30, null=True, blank=True)
     cabinet_order = models.CharField('机柜中序号', max_length=30, null=True, blank=True)
 
-    business_unit = models.ManyToManyField(to=BusinessUnit,null=True, blank=True)
+    business_unit = models.ManyToManyField(to=BusinessUnit, blank=True)
 
     tags = models.ManyToManyField(Tag)
 

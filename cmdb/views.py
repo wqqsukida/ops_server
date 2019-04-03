@@ -120,6 +120,9 @@ def logout(request):
 def forbidden(request):
     return render(request,'403.html')
 
+def page_not_found(request):
+    return render(request,'404.html')
+
 def index(request):
     '''
     index页面函数
@@ -586,7 +589,7 @@ def ssd_smartlog(request):
         ssd_obj = Nvme_ssd.objects.get(id=ssd_id)
 
         limit_time = datetime.datetime.now() - datetime.timedelta(seconds=step_time)
-        print(limit_time)
+        # print(limit_time)
         query = Smart_log.objects.filter(ssd_obj=ssd_obj,log_date__gt=limit_time)
         if not query:
             result = {"code": 1, "message": "获取信息失败！"}

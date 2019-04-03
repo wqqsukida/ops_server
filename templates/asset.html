@@ -89,6 +89,35 @@
 
                                 <div class="col-sm-2">
                                     <a id="shownv"  type="button" class="btn btn-warning">显示更多</a>
+
+                                </div>
+                                <div class="col-sm-1"> <!--添加-->
+                                    <!--暂不开放添加功能-->
+                                    <!-- class="btn btn-info" href="#" data-toggle="modal" data-target="#AddModal">+ 添加</a>-->
+                                </div>
+
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-3 ">
+                                    <input type="text" name="q" value="{{ search_q }}" class="form-control"  placeholder="请输入关键字进行搜索或导出" />
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="submit" value="搜索" class="btn btn-primary" />
+                                        <i class="fa fa-search"></i>&nbsp;&nbsp;搜索主机
+                                    </button>
+                                </div>
+
+                                <div class="col-sm-1">
+                                    <button id="export" type="submit" class="btn btn-success js_confirm" name="export" value="xlsx"><i class="fa fa-download"></i>&nbsp;&nbsp;导出表格</button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                        <form method="post" action="/cmdb/asset_run_tasks">
+                            {% csrf_token %}
+                            <input class="hide" type="text" name="page" value="{{ page }}">
+                            <div class="col-sm-12 m-b-xs" style="padding-bottom: 10px;">
+                                <div class="col-sm-7">
                                     <div class="dropdown profile-element" style="display: inline-block">
                                         <button data-toggle="dropdown" class="btn btn-white dropdown-toggle">
                                             <span class="clear">
@@ -118,33 +147,6 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="col-sm-1"> <!--添加-->
-                                    <!--暂不开放添加功能-->
-                                    <!-- class="btn btn-info" href="#" data-toggle="modal" data-target="#AddModal">+ 添加</a>-->
-                                </div>
-
-                                <div class="col-sm-4"></div>
-                                <div class="col-sm-3 ">
-                                    <input type="text" name="q" value="{{ search_q }}" class="form-control"  placeholder="请输入关键字进行搜索或导出" />
-                                </div>
-                                <div class="col-sm-1">
-                                    <button type="submit" value="搜索" class="btn btn-primary" />
-                                        <i class="fa fa-search"></i>&nbsp;&nbsp;搜索主机
-                                    </button>
-                                </div>
-
-                                <div class="col-sm-1">
-                                    <button id="export" type="submit" class="btn btn-success js_confirm" name="export" value="xlsx"><i class="fa fa-download"></i>&nbsp;&nbsp;导出表格</button>
-                                </div>
-
-                            </form>
-                        </div>
-
-                        <form method="post" action="/cmdb/asset_run_tasks">
-                            {% csrf_token %}
-                            <input class="hide" type="text" name="page" value="{{ page }}">
-                            <div class="col-sm-12 m-b-xs" style="padding-bottom: 10px;">
-                                <div class="col-sm-7"></div>
                                 <div class="col-sm-2">
                                     <select class="form-control"  id="chose-action">
                                         <option disabled selected='selected'>====选择批量执行动作====</option>
@@ -257,7 +259,7 @@
                                         <th data-hide="all">机柜号</th>
                                         <th data-hide="all">客户端版本</th>
                                         <th data-hide="all">TAGS</th>
-                                        <th>操作(更新)</th>
+                                        <th>操作(更新/刪除)</th>
                                     </tr>
                                  </thead>
                                  <tbody>
